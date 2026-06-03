@@ -1,0 +1,146 @@
+:root {
+  --sidebar-width: 280px;
+}
+
+.sidebar {
+  width: var(--sidebar-width);
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  background: var(--bg-white);
+  padding: 22px 18px;
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.06);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 50;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.logoArea {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 8px;
+  padding: 8px 4px;
+}
+
+.logoIcon {
+  font-size: 22px;
+}
+
+.logoText {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--text-primary);
+}
+
+.logoText span {
+  color: #14B8A6;
+}
+
+.navLinks {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.navItem a {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  color: var(--text-primary);
+  text-decoration: none;
+  padding: 11px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.navItem a:hover {
+  background: rgba(20, 184, 166, 0.08);
+  color: #14B8A6;
+  transform: translateX(3px);
+}
+
+.navItem a.active {
+  background: rgba(20, 184, 166, 0.12);
+  color: #14B8A6;
+  font-weight: 600;
+}
+
+.sidebarFooter {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.helpBtn {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 14px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.helpBtn:hover {
+  color: #14B8A6;
+  background: rgba(20, 184, 166, 0.08);
+}
+
+.userProfileMini {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  text-decoration: none;
+  margin-bottom: 8px;
+  transition: background 0.2s;
+}
+
+.userProfileMini:hover {
+  background: var(--bg-soft);
+}
+
+.miniAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--primary-color);
+}
+
+.miniInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.miniName {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.miniRole {
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+@media (max-width: 1024px) {
+  .sidebar {
+    display: none;
+  }
+}
