@@ -89,7 +89,17 @@ class MessageController
             Response::error('Cannot start conversation with yourself.', 400);
         }
 
-        // Check for existing conversation (prevent duplicates as per Task 1)
+        // Check for an approved claim between this user and the item
+        // Only allow chat if the user is the owner OR has an APPROVED claim
+        $claimCheck = $db->prepare('SELECT status FROM claims WHERE item_id = ? AND claimant_id = ?');
+        $claimCheck->execute([$itemId, $user['id']]);
+        $claim = $claimCheck->fetch();
+
+        if (!$claim || $claim['status'] !== 'approved') {
+            Response::error('You can only start a chat after your claim is approved by the founder.', 403);
+        }
+
+        // Check for existing conversation (prevent duplicates)
         $existing = $db->prepare(
             'SELECT id FROM conversations WHERE item_id = ? AND requester_id = ? AND owner_id = ?'
         );
@@ -110,7 +120,8 @@ class MessageController
             (int) $item['user_id'],
             'New Message',
             "{$user['name']} wants to discuss \"{$item['title']}\" with you.",
-            'message'
+            'message',
+            $convId
         );
         
         Response::json(['id' => $convId], 201);

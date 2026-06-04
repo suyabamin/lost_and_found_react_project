@@ -125,6 +125,48 @@
   animation: spin 1s linear infinite;
 }
 
+.ratingInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.stars {
+  display: flex;
+  gap: 2px;
+}
+
+.starFilled {
+  color: #fbbf24;
+}
+
+.starEmpty {
+  color: #e2e8f0;
+}
+
+.avgRating {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--text-primary);
+}
+
+.totalRatings {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.historyIcon {
+  width: 40px;
+  height: 40px;
+  background: #f1f5f9;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+}
+
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
@@ -824,3 +866,72 @@
 :global([data-theme='dark']) .cardTitle {
   border-bottom-color: #334155;
 }
+
+/* ============ REWARDS TAB ============ */
+.rewardItem {
+  border-left: 4px solid #10b981;
+}
+
+.rewardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.rewardStatus {
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+.rewardStatus.pending   { background: #fef3c7; color: #92400e; }
+.rewardStatus.confirmed { background: #d1fae5; color: #065f46; }
+.rewardStatus.rejected  { background: #fee2e2; color: #991b1b; }
+
+.rewardMeta {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.rewardActions {
+  display: flex;
+  gap: 8px;
+}
+
+.confirmBtn, .rejectBtn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.confirmBtn {
+  background: #10b981;
+  color: white;
+}
+
+.confirmBtn:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.rejectBtn {
+  background: #ef4444;
+  color: white;
+}
+
+.rejectBtn:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+:global([data-theme='dark']) .rewardStatus.pending { background: #451a03; color: #fbbf24; }
+:global([data-theme='dark']) .rewardStatus.confirmed { background: #064e3b; color: #34d399; }
+:global([data-theme='dark']) .rewardStatus.rejected { background: #450a0a; color: #f87171; }

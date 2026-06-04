@@ -13,7 +13,14 @@ class NotificationController
             'SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 50'
         );
         $stmt->execute([$user['id']]);
-        Response::json(['notifications' => $stmt->fetchAll()]);
+        
+        $notifications = $stmt->fetchAll();
+        // Add relative time
+        foreach ($notifications as &$n) {
+            $n['time_ago'] = $this->timeAgo($n['created_at']);
+        }
+        
+        Response::json(['notifications' => $notifications]);
     }
 
     /**
@@ -54,28 +61,26 @@ class NotificationController
     }
 
     /**
-     * DELETE /api/notifications/{id}
+     * Static helper to create a notification
      */
-    public function destroy(array $params): void
-    {
-        $user = Request::requireUser();
-        Database::connection()->prepare(
-            'DELETE FROM notifications WHERE id = ? AND user_id = ?'
-        )->execute([$params['id'], $user['id']]);
-        Response::json(['message' => 'Notification deleted.']);
-    }
-
-    /**
-     * Static helper to create a notification from other controllers
-     */
-    public static function createNotification(int $userId, string $title, string $message, string $type = 'system'): void
+    public static function createNotification(int $userId, string $title, string $message, string $type = 'system', $referenceId = null): void
     {
         try {
-            Database::connection()->prepare(
-                'INSERT INTO notifications (user_id, title, message, type, is_read) VALUES (?, ?, ?, ?, 0)'
-            )->execute([$userId, $title, $message, $type]);
+            $db = Database::connection();
+            $stmt = $db->prepare('INSERT INTO notifications (user_id, title, message, type, reference_id, is_read) VALUES (?, ?, ?, ?, ?, 0)');
+            $stmt->execute([$userId, $title, $message, $type, $referenceId]);
         } catch (\Exception $e) {
             error_log("[NOTIFICATION] Failed to create: " . $e->getMessage());
         }
+    }
+
+    private function timeAgo(string $datetime): string
+    {
+        $time = strtotime($datetime);
+        $diff = time() - $time;
+        if ($diff < 60) return 'Just now';
+        if ($diff < 3600) return floor($diff / 60) . 'm ago';
+        if ($diff < 86400) return floor($diff / 3600) . 'h ago';
+        return floor($diff / 86400) . 'd ago';
     }
 }

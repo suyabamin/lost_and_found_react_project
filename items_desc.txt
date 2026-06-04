@@ -1,0 +1,16 @@
+Field	Type	Null	Key	Default	Extra
+id	int(11)	NO	PRI	NULL	auto_increment
+user_id	int(11)	NO	MUL	NULL	
+title	varchar(180)	NO		NULL	
+description	text	NO		NULL	
+category	varchar(80)	NO		NULL	
+status	enum('lost','found','resolved')	NO		lost	
+location	varchar(255)	NO		NULL	
+full_address	text	YES		NULL	
+latitude	decimal(10,8)	YES		NULL	
+longitude	decimal(11,8)	YES		NULL	
+item_date	date	YES		NULL	
+contact	varchar(120)	YES		NULL	
+image_url	varchar(500)	YES		NULL	
+created_at	timestamp	NO		current_timestamp()	
+updated_at	timestamp	NO		current_timestamp()	on update current_timestamp()

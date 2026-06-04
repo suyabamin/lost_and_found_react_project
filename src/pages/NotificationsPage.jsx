@@ -200,7 +200,10 @@ const NotificationsPage = () => {
   // Parse reference_id JSON from notification
   const parseRef = (notif) => {
     try {
-      if (notif.reference_id) return JSON.parse(notif.reference_id)
+      if (notif.reference_id) {
+        const parsed = JSON.parse(notif.reference_id)
+        return typeof parsed === 'object' && parsed !== null ? parsed : {}
+      }
     } catch { }
     return {}
   }
@@ -209,38 +212,62 @@ const NotificationsPage = () => {
   const handleNotificationClick = async (notif) => {
     // Mark as read
     if (!notif.is_read) {
-      await notificationsService.markAsRead(notif.id)
-      setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, is_read: 1 } : n))
+      try {
+        await notificationsService.markAsRead(notif.id)
+        setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, is_read: 1 } : n))
+      } catch (err) { console.error('Error marking as read:', err) }
     }
 
     const ref = parseRef(notif)
+    const refId = notif.reference_id
 
-    // Claim notification — open modal with claim details
-    if (notif.type === 'claim' && ref.claim_id) {
-      setClaimLoading(true)
-      setClaimModal({})  // show modal with spinner
-      try {
-        const res = await claimsService.getClaimById(ref.claim_id)
-        setClaimModal(res.data.claim)
-      } catch (err) {
-        setClaimModal(null)
-        Swal.fire('Error', err.response?.data?.message || 'Could not load claim details.', 'error')
-      } finally {
-        setClaimLoading(false)
+    // 1. Claim Request (Received by Founder)
+    if (notif.type === 'claim') {
+      const claimId = ref.claim_id || refId
+      if (claimId) {
+        setClaimLoading(true)
+        setClaimModal({}) // Show loading state in modal
+        try {
+          const res = await claimsService.getClaimById(claimId)
+          setClaimModal(res.data.claim)
+        } catch (err) {
+          setClaimModal(null)
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: err.response?.data?.message || 'Could not load claim details.',
+            confirmButtonColor: '#ef4444'
+          })
+        } finally {
+          setClaimLoading(false)
+        }
+        return
+      }
+    }
+
+    // 2. Chat / Messages
+    if (notif.type === 'message' || notif.type === 'claim_approved') {
+      const convId = ref.conversation_id || refId
+      if (convId) {
+        navigate(`/chat/${convId}`)
+      } else {
+        navigate('/chat')
       }
       return
     }
 
-    // Approved claim → go to chat
-    if (notif.type === 'claim_approved' && ref.conversation_id) {
-      navigate(`/chat/${ref.conversation_id}`)
+    // 3. Tracking / Return / Reward / Rating
+    if (['tracking', 'return', 'reward', 'rating'].includes(notif.type)) {
+      const trackingId = ref.tracking_id || refId
+      if (trackingId) {
+        navigate(`/tracking/${trackingId}`)
+      }
       return
     }
 
-    // Message notification → go to chat
-    if (notif.type === 'message') {
-      navigate('/chat')
-      return
+    // 4. Default: try to go to item if we have it
+    if (ref.item_id) {
+      navigate(`/items/${ref.item_id}`)
     }
   }
 
@@ -330,9 +357,11 @@ const NotificationsPage = () => {
 
   const isClickable = (notif) => {
     const ref = parseRef(notif)
-    if (notif.type === 'claim' && ref.claim_id) return true
-    if (notif.type === 'claim_approved' && ref.conversation_id) return true
+    const refId = notif.reference_id
+    if (notif.type === 'claim' && (ref.claim_id || refId)) return true
+    if (notif.type === 'claim_approved' && (ref.conversation_id || refId)) return true
     if (notif.type === 'message') return true
+    if (['tracking', 'return', 'reward', 'rating'].includes(notif.type) && (ref.tracking_id || refId)) return true
     return false
   }
 
@@ -444,6 +473,7 @@ const NotificationsPage = () => {
                 const typeInfo = getTypeLabel(notif.type)
                 const clickable = isClickable(notif)
                 const ref = parseRef(notif)
+                const refId = notif.reference_id
                 return (
                   <div
                     key={notif.id}
@@ -465,13 +495,16 @@ const NotificationsPage = () => {
                           {new Date(notif.created_at).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
                         </span>
                         {/* Quick action hints */}
-                        {notif.type === 'claim' && ref.claim_id && (
+                        {notif.type === 'claim' && (ref.claim_id || refId) && (
                           <span className={styles.clickHint}>🔍 Click to review claim</span>
                         )}
-                        {notif.type === 'claim_approved' && ref.conversation_id && (
+                        {(notif.type === 'claim_approved' || notif.type === 'message') && (ref.conversation_id || refId) && (
                           <span className={styles.clickHintGreen}>💬 Click to open chat</span>
                         )}
-                        {notif.type === 'message' && (
+                        {['tracking', 'return', 'reward', 'rating'].includes(notif.type) && (ref.tracking_id || refId) && (
+                          <span className={styles.clickHint}>📍 Click to track/view return</span>
+                        )}
+                        {notif.type === 'message' && !ref.conversation_id && !refId && (
                           <span className={styles.clickHint}>💬 Click to view messages</span>
                         )}
                       </div>

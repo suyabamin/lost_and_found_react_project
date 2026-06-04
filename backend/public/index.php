@@ -24,6 +24,7 @@ $router->get('/api/profile/posts', [ProfileController::class, 'posts']);
 $router->get('/api/profile/favorites', [ProfileController::class, 'favorites']);
 $router->get('/api/profile/claims', [ProfileController::class, 'claims']);
 $router->get('/api/profile/stats', [ProfileController::class, 'stats']);
+$router->get('/api/profile/history', [ProfileController::class, 'history']);
 
 $router->get('/api/items', [ItemController::class, 'index']);
 $router->post('/api/items', [ItemController::class, 'store']);
@@ -63,6 +64,18 @@ $router->get('/api/notifications/unread-count', [NotificationController::class, 
 $router->post('/api/notifications/{id}/read', [NotificationController::class, 'markRead']);
 $router->post('/api/notifications/read-all', [NotificationController::class, 'markAllRead']);
 $router->delete('/api/notifications/{id}', [NotificationController::class, 'destroy']);
+
+// Tracking
+$router->post('/api/tracking/update-location', [TrackingController::class, 'updateLocation']);
+$router->get('/api/tracking/{id}', [TrackingController::class, 'show']);
+$router->post('/api/tracking/{id}/complete', [TrackingController::class, 'complete']);
+
+// Return Process
+$router->post('/api/return-item/{id}', [ReturnController::class, 'submitReturn']);
+
+// Rewards
+$router->get('/api/rewards/my', [RewardController::class, 'myRewards']);
+$router->patch('/api/rewards/{id}/respond', [RewardController::class, 'respond']);
 
 $router->get('/api/admin/stats', [AdminController::class, 'stats']);
 $router->get('/api/admin/users', [AdminController::class, 'users']);

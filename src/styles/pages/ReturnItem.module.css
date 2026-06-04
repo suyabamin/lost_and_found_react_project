@@ -1,0 +1,389 @@
+.container {
+  background: var(--bg-soft);
+  min-height: 100vh;
+}
+
+.main {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.card {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+}
+
+.backBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: #64748b;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 24px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.header h1 {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.header p {
+  color: #64748b;
+}
+
+.section {
+  margin-bottom: 40px;
+}
+
+.section h3 {
+  font-size: 18px;
+  margin-bottom: 20px;
+  color: #1e293b;
+}
+
+.starRating {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.starBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 36px;
+  padding: 0;
+  transition: transform 0.2s;
+}
+
+.starBtn:hover {
+  transform: scale(1.2);
+}
+
+.starFilled {
+  color: #fbbf24;
+}
+
+.starEmpty {
+  color: #e2e8f0;
+}
+
+.ratingLabel {
+  font-weight: 600;
+  color: #64748b;
+}
+
+.textarea {
+  width: 100%;
+  height: 120px;
+  padding: 16px;
+  border: 2px solid #f1f5f9;
+  border-radius: 12px;
+  font-family: inherit;
+  resize: none;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: #14b8a6;
+}
+
+.rewardToggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.toggleOff {
+  background: #f1f5f9;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.toggleOn {
+  background: #fee2e2;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  color: #ef4444;
+  cursor: pointer;
+}
+
+.chipGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.chip {
+  padding: 12px;
+  border: 2px solid #f1f5f9;
+  background: white;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.chipActive {
+  padding: 12px;
+  border: 2px solid #14b8a6;
+  background: #f0fdfa;
+  color: #0d9488;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.customAmount {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 2px solid #f1f5f9;
+  padding: 0 12px;
+  border-radius: 12px;
+}
+
+.customInput {
+  border: none;
+  width: 60px;
+  padding: 10px 0;
+  font-weight: 600;
+}
+
+.customInput:focus {
+  outline: none;
+}
+
+.footer {
+  text-align: center;
+  padding-top: 32px;
+  border-top: 2px solid #f1f5f9;
+}
+
+.submitBtn {
+  width: 100%;
+  padding: 16px;
+  background: #14b8a6;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transition: all 0.3s;
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: #0d9488;
+  box-shadow: 0 8px 20px rgba(20, 184, 166, 0.3);
+}
+
+.submitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.finalHint {
+  margin-top: 16px;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.rewardDetails {
+  margin-top: 10px;
+  animation: slideDown 0.3s ease;
+}
+
+.hint {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 20px;
+}
+
+.rewardArea {
+  background: #f8fafc;
+  padding: 24px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+}
+
+.rewardArea label {
+  display: block;
+  font-weight: 700;
+  color: #475569;
+  margin-bottom: 12px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.paymentMethods {
+  margin-top: 30px;
+}
+
+.methodGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.methodBtn, .methodBtnActive {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border: 2px solid #e2e8f0;
+  background: white;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.methodBtnActive {
+  border-color: #14b8a6;
+  background: #f0fdfa;
+  color: #0d9488;
+}
+
+.methodIcon {
+  height: 32px;
+  object-fit: contain;
+}
+
+.paymentInstructions {
+  margin-top: 24px;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  animation: fadeIn 0.3s ease;
+}
+
+.instructionHeader {
+  background: #1e293b;
+  color: white;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.instructionBody {
+  padding: 16px;
+}
+
+.instructionBody p {
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.numberBox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f1f5f9;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.number {
+  font-family: monospace;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.copyBtn {
+  background: #14b8a6;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.warning {
+  color: #ef4444 !important;
+  font-weight: 600;
+  font-size: 12px !important;
+}
+
+.transactionInput {
+  margin-top: 20px;
+}
+
+.inputField {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.inputField:focus {
+  outline: none;
+  border-color: #14b8a6;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (max-width: 600px) {
+  .methodGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.loading, .error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  gap: 20px;
+  font-size: 18px;
+}

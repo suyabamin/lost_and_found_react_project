@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import { useTheme } from '../context/ThemeContext'
 import styles from './Header.module.css'
 import { FaHeart, FaBars, FaTimes, FaHome, FaSearch, FaPlus, FaComments, FaUser, FaSignOutAlt, FaTachometerAlt, FaBell, FaSun, FaMoon } from 'react-icons/fa'
+import NotificationBell from './NotificationBell'
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -47,9 +48,7 @@ const Header = () => {
               <Link to="/favorites" className={isActive('/favorites') ? styles.activeLink : ''}>
                 <FaHeart /> Favorites
               </Link>
-              <Link to="/notifications" className={isActive('/notifications') ? styles.activeLink : ''}>
-                <FaBell /> Notifications
-              </Link>
+              <NotificationBell />
             </div>
           )}
 

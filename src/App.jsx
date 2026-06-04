@@ -26,6 +26,8 @@ import AdminUsers from './pages/admin/AdminUsers'
 import AdminPosts from './pages/admin/AdminPosts'
 import AdminReports from './pages/admin/AdminReports'
 import AdminClaims from './pages/admin/AdminClaims'
+import TrackingPage from './pages/TrackingPage'
+import ReturnItemPage from './pages/ReturnItemPage'
 import NotFound from './pages/NotFound'
 
 function App() {
@@ -37,6 +39,9 @@ function App() {
             {/* Public Routes */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/tracking/:sessionId" element={<TrackingPage />} />
+            <Route path="/return-item/:trackingId" element={<ReturnItemPage />} />
+            <Route path="/404" element={<NotFound />} />
             <Route path="/register" element={<RegisterPage />} />
             
             {/* Protected Routes */}
@@ -55,6 +60,7 @@ function App() {
             <Route path="/claim/:id" element={<ProtectedRoute><ClaimOwnership /></ProtectedRoute>} />
             <Route path="/police-gd" element={<ProtectedRoute><PoliceGD /></ProtectedRoute>} />
             <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+            <Route path="/tracking/:sessionId" element={<ProtectedRoute><TrackingPage /></ProtectedRoute>} />
             
             {/* Admin Routes */}
             <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />

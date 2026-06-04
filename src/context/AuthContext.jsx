@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
+import authService from '../services/authService'
 
 const AuthContext = createContext()
 
@@ -9,16 +10,30 @@ export const AuthProvider = ({ children }) => {
 
   // Check if user is already logged in on mount
   useEffect(() => {
-    const storedUser = localStorage.getItem('user')
-    if (storedUser) {
+    const verifySession = async () => {
       try {
-        setUser(JSON.parse(storedUser))
-        setIsAuthenticated(true)
-      } catch (e) {
-        localStorage.removeItem('user')
+        const response = await authService.getCurrentUser()
+        if (response.data.user) {
+          setUser(response.data.user)
+          setIsAuthenticated(true)
+          localStorage.setItem('user', JSON.stringify(response.data.user))
+        } else {
+          logout()
+        }
+      } catch (err) {
+        console.error('Session verification failed:', err)
+        logout()
+      } finally {
+        setLoading(false)
       }
     }
-    setLoading(false)
+
+    const storedUser = localStorage.getItem('user')
+    if (storedUser) {
+      verifySession()
+    } else {
+      setLoading(false)
+    }
   }, [])
 
   const login = (userData) => {

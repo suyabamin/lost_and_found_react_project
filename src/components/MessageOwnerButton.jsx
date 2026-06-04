@@ -59,13 +59,21 @@ const MessageOwnerButton = ({ itemId, ownerId, className }) => {
       }, 500)
     } catch (err) {
       console.error('Chat error:', err)
-      Swal.fire({
-        icon: 'error',
-        title: 'Messaging Error',
-        text: err.response?.data?.message || 'Could not initiate chat. Please try again later.',
-        background: 'var(--card-bg, #fff)',
-        color: 'var(--text-main, #000)'
-      })
+      // 403 = no approved claim yet
+      if (err.response?.status === 403) {
+        Swal.fire({
+          icon: 'info',
+          title: 'Claim Not Approved Yet',
+          text: 'You can only start a chat after the founder approves your claim request.',
+          confirmButtonColor: '#14b8a6',
+        })
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Messaging Error',
+          text: err.response?.data?.message || 'Could not initiate chat. Please try again later.',
+        })
+      }
     } finally {
       setLoading(false)
     }

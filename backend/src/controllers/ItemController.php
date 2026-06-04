@@ -15,6 +15,11 @@ class ItemController
                 $params[] = $filters[$field];
             }
         }
+        
+        // If no status specified, only show lost/found (hide resolved/archived)
+        if (empty($filters['status'])) {
+            $where[] = "items.status IN ('lost', 'found')";
+        }
         if (!empty($filters['keyword'])) {
             $where[] = '(title LIKE ? OR description LIKE ?)';
             $params[] = '%' . $filters['keyword'] . '%';
@@ -69,38 +74,48 @@ class ItemController
             $imageUrl = $data['image_url'];
         }
 
-        $stmt = Database::connection()->prepare('INSERT INTO items (user_id, title, description, category, status, location, item_date, contact, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
-        $stmt->execute([
-            $user['id'],
-            trim($data['title'] ?? ''),
-            trim($data['description'] ?? $data['desc'] ?? ''),
-            trim($data['category'] ?? ''),
-            trim($data['status'] ?? 'lost'),
-            trim($data['location'] ?? ''),
-            $data['date'] ?? null,
-            trim($data['contact'] ?? $user['email'] ?? ''),
-            $imageUrl,
-        ]);
+        $stmt = Database::connection()->prepare('INSERT INTO items (user_id, title, description, category, status, location, full_address, latitude, longitude, item_date, contact, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+        try {
+            $stmt->execute([
+                $user['id'],
+                trim($data['title'] ?? ''),
+                trim($data['description'] ?? $data['desc'] ?? ''),
+                trim($data['category'] ?? ''),
+                trim($data['status'] ?? 'lost'),
+                trim($data['location'] ?? ''),
+                $data['full_address'] ?? null,
+                $data['latitude'] ?? null,
+                $data['longitude'] ?? null,
+                $data['date'] ?? null,
+                trim($data['contact'] ?? $user['email'] ?? ''),
+                $imageUrl,
+            ]);
 
-        $id = (int) Database::connection()->lastInsertId();
-        error_log("[DATABASE] Item created with ID: " . $id);
-        
-        // Create notification for the user
-        NotificationController::createNotification(
-            (int) $user['id'],
-            'Post Published',
-            "Your post \"{$data['title']}\" is now live.",
-            'system'
-        );
-        
-        Response::json(['id' => $id, 'message' => 'Item created.'], 201);
+            $id = (int) Database::connection()->lastInsertId();
+            error_log("[DATABASE] Item created with ID: " . $id);
+            
+            // Create notification for the user
+            NotificationController::createNotification(
+                (int) $user['id'],
+                'Post Published',
+                "Your post \"{$data['title']}\" is now live.",
+                'system'
+            );
+            
+            Response::json(['id' => $id, 'message' => 'Item created.'], 201);
+        } catch (PDOException $e) {
+            error_log("[DATABASE] Error creating item: " . $e->getMessage());
+            if ($e->getCode() === "23000") {
+                Response::error('Failed to create post. Your session might be stale. Please logout and login again.', 401);
+            }
+            Response::error('Database error: ' . $e->getMessage(), 500);
+        }
     }
 
     public function show(array $params): void
     {
         error_log("[ITEM] View request for ID: " . ($params['id'] ?? 'NONE'));
-        Request::requireUser();
-        $user = $_SESSION['user'];
+        $user = Request::requireUser();
         $stmt = Database::connection()->prepare(
             'SELECT items.*, items.item_date AS date, users.name AS owner_name, users.avatar AS owner_avatar, users.created_at AS owner_join_date,
             (SELECT COUNT(*) FROM favorites WHERE favorites.item_id = items.id) AS favorite_count,
@@ -124,6 +139,16 @@ class ItemController
         $favStmt->execute([$user['id'], $params['id']]);
         $item['is_favorited'] = (bool) $favStmt->fetch();
         $item['is_owner'] = ((int) $item['user_id'] === (int) $user['id']);
+        
+        // Tracking info
+        $trackingStmt = Database::connection()->prepare(
+            'SELECT id FROM tracking_sessions 
+             WHERE item_id = ? AND status = "active" 
+             AND (owner_id = ? OR claimant_id = ?)'
+        );
+        $trackingStmt->execute([$params['id'], $user['id'], $user['id']]);
+        $tracking = $trackingStmt->fetch();
+        $item['active_tracking_id'] = $tracking ? (int)$tracking['id'] : null;
         
         Response::json(['item' => $item]);
     }
@@ -164,13 +189,16 @@ class ItemController
             $imageUrl = $data['image_url'];
         }
 
-        $stmt = Database::connection()->prepare('UPDATE items SET title = ?, description = ?, category = ?, status = ?, location = ?, item_date = ?, contact = ?, image_url = ? WHERE id = ? AND user_id = ?');
+        $stmt = Database::connection()->prepare('UPDATE items SET title = ?, description = ?, category = ?, status = ?, location = ?, full_address = ?, latitude = ?, longitude = ?, item_date = ?, contact = ?, image_url = ? WHERE id = ? AND user_id = ?');
         $stmt->execute([
             $data['title'] ?? '',
             $data['description'] ?? '',
             $data['category'] ?? '',
             $data['status'] ?? '',
             $data['location'] ?? '',
+            $data['full_address'] ?? null,
+            $data['latitude'] ?? null,
+            $data['longitude'] ?? null,
             $data['date'] ?? null,
             $data['contact'] ?? '',
             $imageUrl,

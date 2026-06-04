@@ -8,10 +8,11 @@ import styles from '../styles/pages/Profile.module.css'
 import {
   FaEdit, FaSignOutAlt, FaSpinner, FaCamera, FaCheck,
   FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaShieldAlt,
-  FaMoon, FaSun, FaBell, FaLock, FaSms, FaClock, FaHistory
+  FaMoon, FaSun, FaBell, FaLock, FaSms, FaClock, FaHistory, FaStar, FaMoneyBillWave
 } from 'react-icons/fa'
 import authService from '../services/authService'
 import itemsService from '../services/itemsService'
+import apiClient from '../services/api'
 import Swal from 'sweetalert2'
 
 const ProfilePage = () => {
@@ -26,7 +27,10 @@ const ProfilePage = () => {
     email: user?.email || '',
     phone: user?.phone || '',
     location: user?.location || 'Dhaka, Bangladesh',
-    bio: user?.bio || 'Lost and Found enthusiast'
+    bio: user?.bio || 'Lost and Found enthusiast',
+    bkash_number: user?.bkash_number || '',
+    nagad_number: user?.nagad_number || '',
+    rocket_number: user?.rocket_number || ''
   })
   const [savedData, setSavedData] = useState({ ...formData })
   const [preferences, setPreferences] = useState({
@@ -42,11 +46,19 @@ const ProfilePage = () => {
   const [myPosts, setMyPosts] = useState([])
   const [myFavorites, setMyFavorites] = useState([])
   const [myClaims, setMyClaims] = useState([])
+  const [myHistory, setMyHistory] = useState([])
+  const [myRewards, setMyRewards] = useState([])
   const [stats, setStats] = useState({
     total_posts: 0,
     favorites: 0,
     claims: 0,
-    resolved: 0
+    resolved: 0,
+    avg_rating: 0,
+    total_ratings: 0,
+    rewards_received: 0,
+    rewards_sent: 0,
+    received_count: 0,
+    sent_count: 0
   })
 
   useEffect(() => {
@@ -56,21 +68,48 @@ const ProfilePage = () => {
   const fetchProfileData = async () => {
     setDataLoading(true)
     try {
-      const [postsRes, favsRes, claimsRes, statsRes] = await Promise.all([
+      const [postsRes, favsRes, claimsRes, statsRes, historyRes, rewardsRes] = await Promise.all([
         authService.getProfilePosts(),
         authService.getProfileFavorites(),
         authService.getProfileClaims(),
-        authService.getProfileStats()
+        authService.getProfileStats(),
+        apiClient.get('/profile/history'),
+        apiClient.get('/rewards/my')
       ])
       
       setMyPosts(postsRes.data.posts || [])
       setMyFavorites(favsRes.data.favorites || [])
       setMyClaims(claimsRes.data.claims || [])
+      setMyHistory(historyRes.data.history || [])
+      setMyRewards(rewardsRes.data.rewards || [])
       setStats(statsRes.data || {})
     } catch (err) {
       console.error('Failed to fetch profile data:', err)
     } finally {
       setDataLoading(false)
+    }
+  }
+
+  const handleRewardResponse = async (rewardId, status) => {
+    try {
+      const result = await Swal.fire({
+        title: status === 'confirmed' ? 'Confirm Reward?' : 'Reject Reward?',
+        text: status === 'confirmed' 
+          ? 'Confirm that you have received this payment in your account.'
+          : 'Are you sure you want to reject this reward? This will notify the sender.',
+        icon: status === 'confirmed' ? 'success' : 'warning',
+        showCancelButton: true,
+        confirmButtonText: status === 'confirmed' ? 'Yes, Confirmed' : 'Yes, Reject',
+        confirmButtonColor: status === 'confirmed' ? '#14B8A6' : '#e74c3c',
+      })
+
+      if (result.isConfirmed) {
+        await apiClient.patch(`/rewards/${rewardId}/respond`, { status })
+        Swal.fire('Success!', `Reward mark as ${status}.`, 'success')
+        fetchProfileData()
+      }
+    } catch (err) {
+      Swal.fire('Error', 'Failed to process reward response.', 'error')
     }
   }
 
@@ -124,7 +163,10 @@ const ProfilePage = () => {
         phone: formData.phone,
         location: formData.location,
         bio: formData.bio,
-        avatar: avatarPreview
+        avatar: avatarPreview,
+        bkash_number: formData.bkash_number,
+        nagad_number: formData.nagad_number,
+        rocket_number: formData.rocket_number
       }
       // Try API call, fall back gracefully if backend not available
       try {
@@ -258,6 +300,15 @@ const ProfilePage = () => {
                 {user?.name}
                 <span className={styles.verificationBadge}>✓ Verified</span>
               </h2>
+              <div className={styles.ratingInfo}>
+                <span className={styles.stars}>
+                  {[...Array(5)].map((_, i) => (
+                    <FaStar key={i} className={i < Math.round(stats.avg_rating) ? styles.starFilled : styles.starEmpty} />
+                  ))}
+                </span>
+                <span className={styles.avgRating}>{stats.avg_rating}</span>
+                <span className={styles.totalRatings}>({stats.total_ratings} ratings)</span>
+              </div>
               <p className={styles.userEmail}>
                 <FaEnvelope style={{ marginRight: 6 }} />
                 {user?.email}
@@ -268,12 +319,12 @@ const ProfilePage = () => {
                   <strong>{stats.total_posts || 0}</strong>
                 </div>
                 <div className={styles.detailItem}>
-                  <span className={styles.detailLabel}>Favorites</span>
-                  <strong>{stats.favorites || 0}</strong>
+                  <span className={styles.detailLabel}>Recovered</span>
+                  <strong>{stats.resolved || 0}</strong>
                 </div>
                 <div className={styles.detailItem}>
-                  <span className={styles.detailLabel}>Matches</span>
-                  <strong>{stats.resolved || 0}</strong>
+                  <span className={styles.detailLabel}>Rewards</span>
+                  <strong>{stats.rewards_received || 0} BDT</strong>
                 </div>
                 <div className={styles.detailItem}>
                   <span className={styles.detailLabel}>Claims</span>
@@ -356,6 +407,54 @@ const ProfilePage = () => {
                       />
                     ) : (
                       <div className={styles.infoValue}>{savedData.location || '—'}</div>
+                    )}
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label className={styles.label}>bKash Number</label>
+                    {editMode ? (
+                      <input
+                        type="text"
+                        name="bkash_number"
+                        className={styles.input}
+                        value={formData.bkash_number}
+                        onChange={handleInputChange}
+                        placeholder="017xxxxxxxx"
+                      />
+                    ) : (
+                      <div className={styles.infoValue}>{savedData.bkash_number || '—'}</div>
+                    )}
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label className={styles.label}>Nagad Number</label>
+                    {editMode ? (
+                      <input
+                        type="text"
+                        name="nagad_number"
+                        className={styles.input}
+                        value={formData.nagad_number}
+                        onChange={handleInputChange}
+                        placeholder="017xxxxxxxx"
+                      />
+                    ) : (
+                      <div className={styles.infoValue}>{savedData.nagad_number || '—'}</div>
+                    )}
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label className={styles.label}>Rocket Number</label>
+                    {editMode ? (
+                      <input
+                        type="text"
+                        name="rocket_number"
+                        className={styles.input}
+                        value={formData.rocket_number}
+                        onChange={handleInputChange}
+                        placeholder="017xxxxxxxx"
+                      />
+                    ) : (
+                      <div className={styles.infoValue}>{savedData.rocket_number || '—'}</div>
                     )}
                   </div>
 
@@ -461,6 +560,18 @@ const ProfilePage = () => {
                 >
                   Claims
                 </button>
+                <button 
+                  className={`${styles.tabBtn} ${activeTab === 'history' ? styles.activeTab : ''}`}
+                  onClick={() => setActiveTab('history')}
+                >
+                  History
+                </button>
+                <button 
+                  className={`${styles.tabBtn} ${activeTab === 'rewards' ? styles.activeTab : ''}`}
+                  onClick={() => setActiveTab('rewards')}
+                >
+                  Rewards
+                </button>
               </div>
 
               <div className={styles.tabContent}>
@@ -534,6 +645,72 @@ const ProfilePage = () => {
                           ))
                         )}
                       </div>
+                    )}
+
+                    {activeTab === 'history' && (
+                        <div className={styles.listContainer}>
+                            {myHistory.length === 0 ? (
+                                <div className={styles.emptyState}>No history events yet.</div>
+                            ) : (
+                                myHistory.map(h => (
+                                    <div key={h.id} className={styles.listItem}>
+                                        <div className={styles.historyIcon}>
+                                            <FaClock />
+                                        </div>
+                                        <div className={styles.itemInfoSmall}>
+                                            <h4 style={{textTransform: 'capitalize'}}>{h.action_type.replace(/_/g, ' ')}</h4>
+                                            <p>Item: <strong>{h.item_title || 'Unknown Item'}</strong></p>
+                                            <small>{new Date(h.created_at).toLocaleString()}</small>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    )}
+
+                    {activeTab === 'rewards' && (
+                        <div className={styles.listContainer}>
+                            {myRewards.length === 0 ? (
+                                <div className={styles.emptyState}>No reward transactions found.</div>
+                            ) : (
+                                myRewards.map(r => (
+                                    <div key={r.id} className={`${styles.listItem} ${styles.rewardItem}`}>
+                                        <div className={styles.rewardIcon}>
+                                            <FaMoneyBillWave style={{ color: '#10b981' }} />
+                                        </div>
+                                        <div className={styles.itemInfoSmall}>
+                                          <div className={styles.rewardHeader}>
+                                            <h4>{r.amount} BDT Reward</h4>
+                                            <span className={`${styles.rewardStatus} ${styles[r.status]}`}>{r.status}</span>
+                                          </div>
+                                          <p>Item: <strong>{r.item_title || 'Archived Item'}</strong></p>
+                                          <p className={styles.rewardMeta}>
+                                            {Number(r.sender_id) === Number(user.id) ? `Sent to ${r.receiver_name}` : `Received from ${r.sender_name}`}
+                                            <span> • {r.payment_method} ({r.transaction_id})</span>
+                                          </p>
+                                          <small>{new Date(r.created_at).toLocaleString()}</small>
+                                        </div>
+                                        
+                                        {Number(r.receiver_id) === Number(user.id) && r.status === 'pending' && (
+                                          <div className={styles.rewardActions}>
+                                            <button 
+                                              onClick={() => handleRewardResponse(r.id, 'confirmed')} 
+                                              className={styles.confirmBtn}
+                                            >
+                                              Confirm
+                                            </button>
+                                            <button 
+                                              onClick={() => handleRewardResponse(r.id, 'rejected')} 
+                                              className={styles.rejectBtn}
+                                            >
+                                              Reject
+                                            </button>
+                                          </div>
+                                        )}
+                                    </div>
+                                ))
+                            )}
+                        </div>
                     )}
                   </>
                 )}

@@ -7,11 +7,32 @@ import styles from '../styles/pages/PostDetails.module.css'
 import { 
   FaChevronLeft, FaChevronRight, FaShare, FaHeart, 
   FaSpinner, FaMapMarkerAlt, FaCalendarAlt, FaEye, FaTag, 
-  FaHandshake, FaShieldAlt, FaInfoCircle 
+  FaHandshake, FaShieldAlt, FaInfoCircle, FaLocationArrow
 } from 'react-icons/fa'
 import itemsService from '../services/itemsService'
 import Swal from 'sweetalert2'
 import { useAuth } from '../context/AuthContext'
+import { MapContainer, TileLayer, Marker } from 'react-leaflet'
+import L from 'leaflet'
+import { FaExternalLinkAlt } from 'react-icons/fa'
+
+const redIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+const greenIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
 
 const PostDetailsPage = () => {
   const { id } = useParams()
@@ -250,6 +271,41 @@ const PostDetailsPage = () => {
               <div className={styles.chip}><strong>Category:</strong> {post.category}</div>
             </div>
           </div>
+
+          {(post.latitude && post.longitude) && (
+            <div className={styles.infoCard} style={{ marginTop: '24px' }}>
+              <h3><FaMapMarkerAlt /> Exact Location</h3>
+              <div style={{ height: '300px', width: '100%', borderRadius: '12px', overflow: 'hidden', margin: '16px 0', border: '1px solid #e2e8f0' }}>
+                <MapContainer 
+                  center={[parseFloat(post.latitude), parseFloat(post.longitude)]} 
+                  zoom={15} 
+                  scrollWheelZoom={false}
+                  style={{ height: '100%', width: '100%' }}
+                >
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+                  <Marker 
+                    position={[parseFloat(post.latitude), parseFloat(post.longitude)]} 
+                    icon={post.status === 'lost' ? redIcon : greenIcon}
+                  />
+                </MapContainer>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <p style={{ margin: 0, fontWeight: '600', fontSize: '14px' }}>{post.location}</p>
+                  <p style={{ margin: 0, color: '#64748b', fontSize: '12px' }}>Coordinates: {post.latitude}, {post.longitude}</p>
+                </div>
+                <button 
+                  className={styles.actionBtn}
+                  onClick={() => window.open(`https://www.google.com/maps?q=${post.latitude},${post.longitude}`, '_blank')}
+                >
+                  <FaExternalLinkAlt /> Open in Google Maps
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className={styles.rightColumn}>
@@ -261,9 +317,33 @@ const PostDetailsPage = () => {
                 ownerId={post.user_id} 
                 className={styles.primaryBtn} 
               />
-              <button className={styles.secondaryBtn} onClick={handleClaim}>
-                <FaHandshake /> Claim Ownership
-              </button>
+              {post.active_tracking_id ? (
+                <button 
+                  className={styles.trackingBtn} 
+                  style={{ 
+                    backgroundColor: '#10b981', 
+                    color: 'white', 
+                    width: '100%', 
+                    padding: '12px', 
+                    borderRadius: '12px', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    gap: '8px', 
+                    marginTop: '10px',
+                    border: 'none',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => navigate(`/tracking/${post.active_tracking_id}`)}
+                >
+                  <FaLocationArrow /> Live Location Tracking
+                </button>
+              ) : (
+                <button className={styles.secondaryBtn} onClick={handleClaim}>
+                  <FaHandshake /> Claim Ownership
+                </button>
+              )}
             </div>
           </div>
 

@@ -12,6 +12,9 @@ class AdminController
             'posts' => (int) $db->query('SELECT COUNT(*) FROM items')->fetchColumn(),
             'reports' => (int) $db->query('SELECT COUNT(*) FROM reports WHERE status = "pending"')->fetchColumn(),
             'claims' => (int) $db->query('SELECT COUNT(*) FROM claims WHERE status = "pending"')->fetchColumn(),
+            'returns' => (int) $db->query('SELECT COUNT(*) FROM tracking_sessions WHERE status = "completed"')->fetchColumn(),
+            'avg_rating' => (float) $db->query('SELECT AVG(rating) FROM ratings')->fetchColumn(),
+            'total_rewards' => (float) $db->query('SELECT SUM(amount) FROM rewards WHERE status = "completed"')->fetchColumn()
         ]);
     }
 

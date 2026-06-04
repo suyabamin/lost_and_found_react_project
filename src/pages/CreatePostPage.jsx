@@ -7,6 +7,7 @@ import styles from '../styles/pages/CreatePost.module.css'
 import { FaTrash, FaArrowRight, FaSpinner } from 'react-icons/fa'
 import itemsService from '../services/itemsService'
 import Swal from 'sweetalert2'
+import LocationPicker from '../components/LocationPicker'
 
 const CreatePostPage = () => {
   const navigate = useNavigate()
@@ -16,12 +17,37 @@ const CreatePostPage = () => {
     status: 'lost',
     description: '',
     location: '',
+    full_address: '',
+    latitude: null,
+    longitude: null,
     date: '',
   })
   const [images, setImages] = useState([])
   const [dragover, setDragover] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  const handleAddressFetch = (data) => {
+    if (data) {
+      // Craft a user-friendly location string from address details if available
+      const addr = data.details;
+      const city = addr.city || addr.town || addr.village || addr.suburb || '';
+      const area = addr.road || addr.neighbourhood || '';
+      const shortAddr = [area, city].filter(Boolean).join(', ');
+
+      setFormData(prev => ({
+        ...prev,
+        location: shortAddr || data.full_address.split(',')[0],
+        full_address: data.full_address
+      }))
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        location: '',
+        full_address: ''
+      }))
+    }
+  }
 
   const categories = [
     'Electronics',
@@ -190,6 +216,23 @@ const CreatePostPage = () => {
                   onChange={handleInputChange}
                   required
                 />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label className={styles.label}>Mark Exact Location on Map *</label>
+                <LocationPicker 
+                  onChange={(pos) => setFormData(prev => ({ 
+                    ...prev, 
+                    latitude: pos?.lat || null, 
+                    longitude: pos?.lng || null 
+                  }))} 
+                  onAddressFetch={handleAddressFetch}
+                />
+                {!formData.latitude && (
+                  <p style={{ fontSize: '11px', color: '#ef4444', marginTop: '4px' }}>
+                    * Please click on the map to mark the exact location.
+                  </p>
+                )}
               </div>
 
               <div className={styles.formGroup}>

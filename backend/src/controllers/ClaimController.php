@@ -175,14 +175,29 @@ class ClaimController
                 $convId = (int) $db->lastInsertId();
             }
 
-            // Notify the claimant about approval with conversation link
+            // Create a tracking session for live meeting
+            $trackingId = TrackingController::createSession(
+                (int) $claim['item_id'],
+                (int) $claim['item_owner_id'],
+                (int) $claim['claimant_id']
+            );
+
             self::createClaimNotification(
                 (int) $claim['claimant_id'],
                 '🎉 Claim Approved!',
-                "Your claim for \"{$claim['item_title']}\" has been approved! You can now chat with the founder.",
+                "Your claim for \"{$claim['item_title']}\" has been approved! You can now chat with the founder and track live location.",
                 'claim_approved',
                 $claimId,
                 $convId
+            );
+            
+            // Send another notification specifically for tracking
+            NotificationController::createNotification(
+                (int) $claim['claimant_id'],
+                'Live Tracking Started',
+                "Tracking session for \"{$claim['item_title']}\" is active. Meet the founder to get your item.",
+                'tracking',
+                $trackingId
             );
         } else {
             // Notify claimant about rejection
