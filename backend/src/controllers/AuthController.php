@@ -41,7 +41,7 @@ class AuthController
         $email = $data['email'] ?? '';
 
         $db = Database::connection();
-        $stmt = $db->prepare('SELECT id, name, email, phone, role, password, avatar FROM users WHERE email = ? LIMIT 1');
+        $stmt = $db->prepare('SELECT id, name, email, phone, role, password, avatar, bio, location, bkash_number, nagad_number, rocket_number FROM users WHERE email = ? LIMIT 1');
         $stmt->execute([$email]);
         $user = $stmt->fetch();
 
@@ -71,7 +71,7 @@ class AuthController
         if (!empty($_SESSION['user'])) {
             // Refresh from DB to get latest avatar/name
             $db = Database::connection();
-            $stmt = $db->prepare('SELECT id, name, email, phone, role, avatar FROM users WHERE id = ?');
+            $stmt = $db->prepare('SELECT id, name, email, phone, role, avatar, bio, location, bkash_number, nagad_number, rocket_number FROM users WHERE id = ?');
             $stmt->execute([$_SESSION['user']['id']]);
             $user = $stmt->fetch();
             if ($user) {

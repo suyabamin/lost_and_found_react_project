@@ -82,7 +82,7 @@ const ProfilePage = () => {
       setMyClaims(claimsRes.data.claims || [])
       setMyHistory(historyRes.data.history || [])
       setMyRewards(rewardsRes.data.rewards || [])
-      setStats(statsRes.data || {})
+      setStats(prev => ({ ...prev, ...(statsRes.data || {}) }))
     } catch (err) {
       console.error('Failed to fetch profile data:', err)
     } finally {
@@ -303,11 +303,13 @@ const ProfilePage = () => {
               <div className={styles.ratingInfo}>
                 <span className={styles.stars}>
                   {[...Array(5)].map((_, i) => (
-                    <FaStar key={i} className={i < Math.round(stats.avg_rating) ? styles.starFilled : styles.starEmpty} />
+                    <FaStar key={i} className={i < Math.round(stats.avg_rating || 0) ? styles.starFilled : styles.starEmpty} />
                   ))}
                 </span>
-                <span className={styles.avgRating}>{stats.avg_rating}</span>
-                <span className={styles.totalRatings}>({stats.total_ratings} ratings)</span>
+                <span className={styles.avgRating}>{Number(stats.avg_rating) > 0 ? stats.avg_rating : '0.0'}</span>
+                <span className={styles.totalRatings}>
+                  {Number(stats.total_ratings) > 0 ? `(${stats.total_ratings} ratings)` : '(No ratings yet)'}
+                </span>
               </div>
               <p className={styles.userEmail}>
                 <FaEnvelope style={{ marginRight: 6 }} />
@@ -324,7 +326,7 @@ const ProfilePage = () => {
                 </div>
                 <div className={styles.detailItem}>
                   <span className={styles.detailLabel}>Rewards</span>
-                  <strong>{stats.rewards_received || 0} BDT</strong>
+                  <strong>{Number(stats.rewards_received) > 0 ? `${stats.rewards_received} BDT` : '0 BDT'}</strong>
                 </div>
                 <div className={styles.detailItem}>
                   <span className={styles.detailLabel}>Claims</span>
@@ -686,7 +688,7 @@ const ProfilePage = () => {
                                           <p>Item: <strong>{r.item_title || 'Archived Item'}</strong></p>
                                           <p className={styles.rewardMeta}>
                                             {Number(r.sender_id) === Number(user.id) ? `Sent to ${r.receiver_name}` : `Received from ${r.sender_name}`}
-                                            <span> • {r.payment_method} ({r.transaction_id})</span>
+                                            <span> • {r.payment_method} ({r.receiver_number})</span>
                                           </p>
                                           <small>{new Date(r.created_at).toLocaleString()}</small>
                                         </div>
