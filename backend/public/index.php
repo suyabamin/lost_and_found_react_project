@@ -77,13 +77,23 @@ $router->post('/api/return-item/{id}', [ReturnController::class, 'submitReturn']
 $router->get('/api/rewards/my', [RewardController::class, 'myRewards']);
 $router->patch('/api/rewards/{id}/respond', [RewardController::class, 'respond']);
 
-$router->get('/api/admin/stats', [AdminController::class, 'stats']);
+// Admin Routes
+$router->get('/api/admin/dashboard', [AdminController::class, 'dashboard']);
 $router->get('/api/admin/users', [AdminController::class, 'users']);
-$router->get('/api/admin/posts', [AdminController::class, 'posts']);
+$router->post('/api/admin/ban-user', [AdminController::class, 'banUser']);
+$router->post('/api/admin/unban-user', [AdminController::class, 'unbanUser']);
+$router->post('/api/admin/promote-user', [AdminController::class, 'promoteUser']);
+$router->post('/api/admin/demote-user', [AdminController::class, 'demoteUser']);
+$router->get('/api/admin/analytics', [AdminController::class, 'analytics']);
+$router->get('/api/admin/stats', [AdminController::class, 'stats']);
 $router->get('/api/admin/reports', [AdminController::class, 'reports']);
-$router->get('/api/admin/claims', [ClaimController::class, 'adminIndex']);
+$router->get('/api/admin/logs', [AdminController::class, 'logs']);
+$router->get('/api/admin/moderation', [AdminController::class, 'moderation']);
+$router->post('/api/admin/posts/{id}/action', [AdminController::class, 'postAction']);
+
+// Legacy/Existing Admin Routes
+$router->get('/api/admin/posts', [AdminController::class, 'posts']);
 $router->patch('/api/admin/claims/{id}', [ClaimController::class, 'updateStatus']);
-// Legacy update claim
 $router->post('/api/admin/claims/{id}', [AdminController::class, 'updateClaim']);
 $router->post('/api/admin/reports/{id}', [AdminController::class, 'updateReport']);
 

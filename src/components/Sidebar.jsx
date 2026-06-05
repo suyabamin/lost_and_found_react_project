@@ -2,7 +2,7 @@ import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import styles from './Sidebar.module.css'
-import { FaHome, FaSearch, FaPlusSquare, FaUser, FaQuestionCircle, FaComments, FaBell } from 'react-icons/fa'
+import { FaHome, FaSearch, FaPlusSquare, FaUser, FaQuestionCircle, FaComments, FaBell, FaTachometerAlt } from 'react-icons/fa'
 
 const Sidebar = () => {
   const location = useLocation()
@@ -16,6 +16,10 @@ const Sidebar = () => {
     { to: '/chat', icon: <FaComments />, label: 'Messages' },
     { to: '/profile', icon: <FaUser />, label: 'Profile' },
   ]
+
+  if (user?.role === 'admin') {
+    navItems.push({ to: '/admin', icon: <FaTachometerAlt />, label: 'Admin Panel' })
+  }
 
   return (
     <aside className={styles.sidebar}>

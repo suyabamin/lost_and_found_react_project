@@ -71,6 +71,13 @@ class ClaimController
             'claim',
             $claimId
         );
+
+        NotificationController::notifyAdmins(
+            "New Claim Submitted", 
+            "A new claim has been submitted for item \"{$item['title']}\" by {$user['name']}.",
+            'admin_claim',
+            $claimId
+        );
         
         Response::json(['message' => 'Claim submitted successfully.', 'id' => $claimId], 201);
     }

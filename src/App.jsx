@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './context/AuthContext'
 import { ThemeProvider } from './context/ThemeContext'
 import ProtectedRoute from './routes/ProtectedRoute'
+import AdminRoute from './routes/AdminRoute'
 
 // Pages
 import LandingPage from './pages/LandingPage'
@@ -26,6 +27,11 @@ import AdminUsers from './pages/admin/AdminUsers'
 import AdminPosts from './pages/admin/AdminPosts'
 import AdminReports from './pages/admin/AdminReports'
 import AdminClaims from './pages/admin/AdminClaims'
+import AdminModeration from './pages/admin/AdminModeration'
+import AdminAnalytics from './pages/admin/AdminAnalytics'
+import AdminStats from './pages/admin/AdminStats'
+import AdminLogs from './pages/admin/AdminLogs'
+import AdminSettings from './pages/admin/AdminSettings'
 import TrackingPage from './pages/TrackingPage'
 import ReturnItemPage from './pages/ReturnItemPage'
 import NotFound from './pages/NotFound'
@@ -63,11 +69,16 @@ function App() {
             <Route path="/tracking/:sessionId" element={<ProtectedRoute><TrackingPage /></ProtectedRoute>} />
             
             {/* Admin Routes */}
-            <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-            <Route path="/admin/users" element={<ProtectedRoute><AdminUsers /></ProtectedRoute>} />
-            <Route path="/admin/posts" element={<ProtectedRoute><AdminPosts /></ProtectedRoute>} />
-            <Route path="/admin/reports" element={<ProtectedRoute><AdminReports /></ProtectedRoute>} />
-            <Route path="/admin/claims" element={<ProtectedRoute><AdminClaims /></ProtectedRoute>} />
+            <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+            <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
+            <Route path="/admin/posts" element={<AdminRoute><AdminPosts /></AdminRoute>} />
+            <Route path="/admin/reports" element={<AdminRoute><AdminReports /></AdminRoute>} />
+            <Route path="/admin/claims" element={<AdminRoute><AdminClaims /></AdminRoute>} />
+            <Route path="/admin/moderation" element={<AdminRoute><AdminModeration /></AdminRoute>} />
+            <Route path="/admin/analytics" element={<AdminRoute><AdminAnalytics /></AdminRoute>} />
+            <Route path="/admin/stats" element={<AdminRoute><AdminStats /></AdminRoute>} />
+            <Route path="/admin/logs" element={<AdminRoute><AdminLogs /></AdminRoute>} />
+            <Route path="/admin/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
             
             {/* 404 */}
             <Route path="*" element={<NotFound />} />

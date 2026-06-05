@@ -16,9 +16,9 @@ class AuthController
         }
 
         $db = Database::connection();
-        $stmt = $db->prepare('INSERT INTO users (name, email, phone, password, role) VALUES (?, ?, ?, ?, ?)');
+        $stmt = $db->prepare('INSERT INTO users (name, email, phone, password, role, status) VALUES (?, ?, ?, ?, ?, ?)');
         try {
-            $stmt->execute([$name, $email, $data['phone'] ?? null, password_hash($password, PASSWORD_DEFAULT), 'user']);
+            $stmt->execute([$name, $email, $data['phone'] ?? null, password_hash($password, PASSWORD_DEFAULT), 'user', 'active']);
         } catch (PDOException $e) {
             Response::error('Email already exists.', 422);
         }
@@ -29,8 +29,12 @@ class AuthController
             'email'  => $email,
             'phone'  => $data['phone'] ?? null,
             'role'   => 'user',
+            'status' => 'active',
             'avatar' => null,
         ];
+
+        NotificationController::notifyAdmins("New User Registration", "A new user $name ($email) has registered on the platform.");
+
         $_SESSION['user'] = $user;
         Response::json(['user' => $user], 201);
     }
@@ -41,7 +45,7 @@ class AuthController
         $email = $data['email'] ?? '';
 
         $db = Database::connection();
-        $stmt = $db->prepare('SELECT id, name, email, phone, role, password, avatar, bio, location, bkash_number, nagad_number, rocket_number FROM users WHERE email = ? LIMIT 1');
+        $stmt = $db->prepare('SELECT id, name, email, phone, role, status, password, avatar, bio, location, bkash_number, nagad_number, rocket_number FROM users WHERE email = ? LIMIT 1');
         $stmt->execute([$email]);
         $user = $stmt->fetch();
 
@@ -51,6 +55,10 @@ class AuthController
 
         if (!password_verify($data['password'] ?? '', $user['password'])) {
             Response::error('Invalid email or password.', 401);
+        }
+
+        if ($user['status'] === 'banned') {
+            Response::error('Your account has been banned. Please contact support.', 403);
         }
 
         unset($user['password']);
@@ -71,10 +79,16 @@ class AuthController
         if (!empty($_SESSION['user'])) {
             // Refresh from DB to get latest avatar/name
             $db = Database::connection();
-            $stmt = $db->prepare('SELECT id, name, email, phone, role, avatar, bio, location, bkash_number, nagad_number, rocket_number FROM users WHERE id = ?');
+            $stmt = $db->prepare('SELECT id, name, email, phone, role, status, avatar, bio, location, bkash_number, nagad_number, rocket_number FROM users WHERE id = ?');
             $stmt->execute([$_SESSION['user']['id']]);
             $user = $stmt->fetch();
             if ($user) {
+                if ($user['status'] === 'banned') {
+                    $_SESSION = [];
+                    session_destroy();
+                    Response::json(['user' => null, 'banned' => true], 403);
+                    return;
+                }
                 $user['avatar'] = imageUrl($user['avatar']);
                 $_SESSION['user'] = $user;
                 Response::json(['user' => $user]);

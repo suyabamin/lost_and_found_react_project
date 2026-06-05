@@ -28,7 +28,13 @@ class Request
         if (empty($_SESSION['user'])) {
             Response::error('Authentication required.', 401);
         }
-        return $_SESSION['user'];
+        $user = $_SESSION['user'];
+        if (($user['status'] ?? 'active') === 'banned') {
+            $_SESSION = [];
+            session_destroy();
+            Response::error('Your account has been banned.', 403);
+        }
+        return $user;
     }
 
     public static function requireAdmin(): array

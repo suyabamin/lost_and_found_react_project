@@ -74,6 +74,19 @@ class NotificationController
         }
     }
 
+    public static function notifyAdmins(string $title, string $message, string $type = 'admin_alert', $referenceId = null): void
+    {
+        try {
+            $db = Database::connection();
+            $admins = $db->query("SELECT id FROM users WHERE role = 'admin'")->fetchAll(PDO::FETCH_COLUMN);
+            foreach ($admins as $adminId) {
+                self::createNotification((int)$adminId, $title, $message, $type, $referenceId);
+            }
+        } catch (\Exception $e) {
+            error_log("[NOTIFICATION] Failed to notify admins: " . $e->getMessage());
+        }
+    }
+
     private function timeAgo(string $datetime): string
     {
         $time = strtotime($datetime);

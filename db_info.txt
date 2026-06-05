@@ -1,0 +1,66 @@
+
+Warning: Undefined array key "REQUEST_METHOD" in D:\lost_and_found_React\backend\src\bootstrap.php on line 50
+Table: users
+  id - int(11)
+  name - varchar(120)
+  email - varchar(160)
+  phone - varchar(40)
+  password - varchar(255)
+  role - enum('user','admin')
+  status - enum('active','banned')
+  avatar - varchar(500)
+  bio - text
+  location - varchar(255)
+  bkash_number - varchar(20)
+  nagad_number - varchar(20)
+  rocket_number - varchar(20)
+  current_lat - decimal(10,8)
+  current_lng - decimal(11,8)
+  created_at - timestamp
+  updated_at - timestamp
+Table: items
+  id - int(11)
+  user_id - int(11)
+  type - enum('lost','found')
+  title - varchar(180)
+  description - text
+  category - varchar(80)
+  status - enum('lost','found','resolved','processing')
+  location - varchar(255)
+  full_address - text
+  latitude - decimal(10,8)
+  longitude - decimal(11,8)
+  item_date - date
+  contact - varchar(120)
+  image_url - varchar(500)
+  created_at - timestamp
+  updated_at - timestamp
+Table: ratings
+  id - int(11)
+  tracking_id - int(11)
+  item_id - int(11)
+  from_user_id - int(11)
+  to_user_id - int(11)
+  rating - tinyint(4)
+  review - text
+  created_at - timestamp
+Table: claims
+  id - int(11)
+  item_id - int(11)
+  claimant_id - int(11)
+  reason - text
+  proof_description - text
+  proof_image - varchar(500)
+  contact_info - varchar(255)
+  status - enum('pending','approved','rejected')
+  created_at - timestamp
+  updated_at - timestamp
+Table: reports
+  id - int(11)
+  item_id - int(11)
+  user_id - int(11)
+  reason - varchar(120)
+  details - text
+  status - enum('pending','reviewed','dismissed','action_taken')
+  created_at - timestamp
+  updated_at - timestamp
