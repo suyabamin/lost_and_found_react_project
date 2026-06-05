@@ -74,14 +74,18 @@ class ItemController
             $imageUrl = $data['image_url'];
         }
 
-        $stmt = Database::connection()->prepare('INSERT INTO items (user_id, title, description, category, status, location, full_address, latitude, longitude, item_date, contact, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+        $status = trim($data['status'] ?? 'lost');
+        $type = in_array($status, ['lost', 'found']) ? $status : 'lost';
+
+        $stmt = Database::connection()->prepare('INSERT INTO items (user_id, type, title, description, category, status, location, full_address, latitude, longitude, item_date, contact, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
         try {
             $stmt->execute([
                 $user['id'],
+                $type,
                 trim($data['title'] ?? ''),
                 trim($data['description'] ?? $data['desc'] ?? ''),
                 trim($data['category'] ?? ''),
-                trim($data['status'] ?? 'lost'),
+                $status,
                 trim($data['location'] ?? ''),
                 $data['full_address'] ?? null,
                 $data['latitude'] ?? null,

@@ -36,8 +36,9 @@ class TrackingController
 
         $stmt = $db->prepare('
             SELECT ts.*, 
-                   items.title AS item_title, items.image_url AS item_image,
+                   items.title AS item_title, items.image_url AS item_image, items.type AS item_type,
                    owner.name AS owner_name, owner.current_lat AS owner_lat, owner.current_lng AS owner_lng, owner.avatar AS owner_avatar,
+                   owner.bkash_number AS owner_bkash, owner.nagad_number AS owner_nagad, owner.rocket_number AS owner_rocket,
                    claimant.name AS claimant_name, claimant.current_lat AS claimant_lat, claimant.current_lng AS claimant_lng, claimant.avatar AS claimant_avatar,
                    claimant.bkash_number AS claimant_bkash, claimant.nagad_number AS claimant_nagad, claimant.rocket_number AS claimant_rocket
             FROM tracking_sessions ts
@@ -58,11 +59,16 @@ class TrackingController
             Response::error('Access denied.', 403);
         }
 
-        // Map finder details for reward processing
+        // Map details for reward processing
         $session['claimant_details'] = [
             'bkash_number'  => $session['claimant_bkash'],
             'nagad_number'  => $session['claimant_nagad'],
             'rocket_number' => $session['claimant_rocket'],
+        ];
+        $session['owner_details'] = [
+            'bkash_number'  => $session['owner_bkash'],
+            'nagad_number'  => $session['owner_nagad'],
+            'rocket_number' => $session['owner_rocket'],
         ];
 
         $session['item_image'] = imageUrl($session['item_image']);

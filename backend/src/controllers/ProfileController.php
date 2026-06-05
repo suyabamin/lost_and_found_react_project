@@ -167,7 +167,7 @@ class ProfileController
         $s1->execute([$user['id']]);
         $totalPosts = (int) $s1->fetchColumn();
 
-        $s2 = $db->prepare('SELECT COUNT(*) FROM items WHERE user_id = ? AND status = "resolved"');
+        $s2 = $db->prepare('SELECT COUNT(*) FROM history WHERE user_id = ? AND (action_type = "item_returned" OR action_type = "item_recovered")');
         $s2->execute([$user['id']]);
         $resolved = (int) $s2->fetchColumn();
 
@@ -184,13 +184,13 @@ class ProfileController
         $s5->execute([$user['id']]);
         $ratingData = $s5->fetch();
 
-        // Received
-        $stmt = $db->prepare('SELECT COUNT(*) as count, SUM(amount) as total FROM rewards WHERE receiver_id = ? AND status = "confirmed"');
+        // Received (Total expected/confirmed)
+        $stmt = $db->prepare('SELECT COUNT(*) as count, SUM(amount) as total FROM rewards WHERE receiver_id = ?');
         $stmt->execute([$user['id']]);
         $received = $stmt->fetch();
 
         // Sent
-        $stmt = $db->prepare('SELECT COUNT(*) as count, SUM(amount) as total FROM rewards WHERE sender_id = ? AND status = "confirmed"');
+        $stmt = $db->prepare('SELECT COUNT(*) as count, SUM(amount) as total FROM rewards WHERE sender_id = ?');
         $stmt->execute([$user['id']]);
         $sent = $stmt->fetch();
 

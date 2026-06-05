@@ -159,6 +159,9 @@ class ClaimController
         $convId = null;
 
         if ($status === 'approved') {
+            // Set item status to processing
+            $db->prepare('UPDATE items SET status = "processing" WHERE id = ?')->execute([$claim['item_id']]);
+
             // Create a conversation between founder and claimant
             $existingConv = $db->prepare(
                 'SELECT id FROM conversations WHERE item_id = ? AND requester_id = ? AND owner_id = ?'

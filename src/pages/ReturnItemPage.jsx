@@ -34,10 +34,11 @@ const ReturnItemPage = () => {
 
   useEffect(() => {
     if (paymentMethod && tracking) {
-      // Fetch finder's payment number based on selected method
       const methodKey = `${paymentMethod.toLowerCase()}_number`
-      // tracking has claimant info if current user is owner
-      const number = tracking.claimant_details?.[methodKey] || 'Not provided'
+      const isLostPost = tracking.item_type === 'lost'
+      // If it was a LOST post, owner pays claimant. If it was a FOUND post, claimant pays owner.
+      const details = isLostPost ? tracking.claimant_details : tracking.owner_details
+      const number = details?.[methodKey] || 'Not provided'
       setPaymentNumber(number)
     }
   }, [paymentMethod, tracking])
@@ -139,6 +140,15 @@ const ReturnItemPage = () => {
             <p>Please complete this form to close the recovery process for <strong>{tracking.item_title}</strong>.</p>
           </div>
 
+          {/* Logic variables */}
+          {( () => {
+            const isLostPost = tracking.item_type === 'lost';
+            const isOwner = Number(user?.id) === Number(tracking.owner_id);
+            const isLoster = (isLostPost && isOwner) || (!isLostPost && !isOwner);
+            window._isLoster = isLoster; // Temporary hack to use in JSX below if needed, but I'll use inline
+            return null;
+          })()}
+
           <form onSubmit={handleSubmit} className={styles.form}>
             {/* Step 1: Rating */}
             <div className={styles.section}>
@@ -175,8 +185,9 @@ const ReturnItemPage = () => {
               />
             </div>
 
-            {/* Step 3: Reward (Only for Owners who are getting their item back) */}
-            {Number(user?.id) === Number(tracking.owner_id) && (
+            {/* Step 3: Reward (Only for the Loster - person who lost the item) */}
+            {((tracking.item_type === 'lost' && Number(user?.id) === Number(tracking.owner_id)) || 
+              (tracking.item_type === 'found' && Number(user?.id) === Number(tracking.claimant_id))) && (
               <div className={styles.section}>
                 <div className={styles.rewardToggle}>
                   <h3>3. Optional Reward For Finder</h3>
@@ -297,7 +308,7 @@ const ReturnItemPage = () => {
                 {submitting ? <FaSpinner className={styles.spin} /> : <FaCheckCircle />}
                 Complete Return Process
               </button>
-              <p className={styles.finalHint}>Item will be marked as returned and archived from public view.</p>
+              <p className={styles.finalHint}>Item status will be set to processing until both parties confirm.</p>
             </div>
           </form>
         </div>

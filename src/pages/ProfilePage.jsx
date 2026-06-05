@@ -325,8 +325,12 @@ const ProfilePage = () => {
                   <strong>{stats.resolved || 0}</strong>
                 </div>
                 <div className={styles.detailItem}>
-                  <span className={styles.detailLabel}>Rewards</span>
+                  <span className={styles.detailLabel}>Earnings</span>
                   <strong>{Number(stats.rewards_received) > 0 ? `${stats.rewards_received} BDT` : '0 BDT'}</strong>
+                </div>
+                <div className={styles.detailItem}>
+                  <span className={styles.detailLabel}>Rewards Sent</span>
+                  <strong>{Number(stats.rewards_sent) > 0 ? `${stats.rewards_sent} BDT` : '0 BDT'}</strong>
                 </div>
                 <div className={styles.detailItem}>
                   <span className={styles.detailLabel}>Claims</span>
@@ -688,7 +692,14 @@ const ProfilePage = () => {
                                           <p>Item: <strong>{r.item_title || 'Archived Item'}</strong></p>
                                           <p className={styles.rewardMeta}>
                                             {Number(r.sender_id) === Number(user.id) ? `Sent to ${r.receiver_name}` : `Received from ${r.sender_name}`}
-                                            <span> • {r.payment_method} ({r.receiver_number})</span>
+                                            <div style={{ marginTop: '8px', padding: '8px', background: 'rgba(0,0,0,0.03)', borderRadius: '6px' }}>
+                                              <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
+                                                {r.payment_method}: <strong style={{ color: 'var(--text-primary)' }}>{r.receiver_number}</strong>
+                                              </div>
+                                              <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px' }}>
+                                                Transaction ID: <strong style={{ color: 'var(--text-primary)' }}>{r.transaction_id}</strong>
+                                              </div>
+                                            </div>
                                           </p>
                                           <small>{new Date(r.created_at).toLocaleString()}</small>
                                         </div>
