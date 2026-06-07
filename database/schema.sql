@@ -62,7 +62,7 @@ CREATE TABLE items (
   title        VARCHAR(180)  NOT NULL,
   description  TEXT          NOT NULL,
   category     VARCHAR(80)   NOT NULL,
-  status       ENUM('lost','found','resolved') NOT NULL DEFAULT 'lost',
+  status       ENUM('lost','found','processing','resolved') NOT NULL DEFAULT 'lost',
   location     VARCHAR(255)  NOT NULL,
   full_address TEXT          NULL,
   latitude     DECIMAL(10, 8) NULL,

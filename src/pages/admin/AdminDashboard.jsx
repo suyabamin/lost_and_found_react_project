@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import AdminLayout from './AdminLayout'
-import axios from 'axios'
+import apiClient from '../../services/api'
 import { 
     FaUsers, FaUserCheck, FaBoxOpen, FaHandHoldingHeart, 
     FaCheckCircle, FaClipboardList, FaComments, FaExclamationTriangle, 
@@ -10,16 +10,17 @@ import {
 const AdminDashboard = () => {
     const [stats, setStats] = useState(null)
     const [loading, setLoading] = useState(true)
+    const [error, setError] = useState(null)
 
     useEffect(() => {
         const fetchStats = async () => {
+            setLoading(true)
             try {
-                const response = await axios.get('http://127.0.0.1:8000/api/admin/dashboard', {
-                    withCredentials: true
-                })
+                const response = await apiClient.get('/admin/dashboard')
                 setStats(response.data)
             } catch (err) {
                 console.error('Failed to fetch dashboard stats:', err)
+                setError('Failed to load dashboard data.')
             } finally {
                 setLoading(false)
             }
@@ -27,19 +28,21 @@ const AdminDashboard = () => {
         fetchStats()
     }, [])
 
-    if (loading) return <AdminLayout title="Dashboard"><div>Loading...</div></AdminLayout>
+    if (loading) return <AdminLayout title="Dashboard"><div style={{ padding: '40px', textAlign: 'center' }}>Loading dashboard...</div></AdminLayout>
+    
+    if (error) return <AdminLayout title="Dashboard"><div style={{ padding: '40px', color: '#ef4444' }}>⚠️ {error}</div></AdminLayout>
 
     const statItems = [
-        { title: 'Total Users', value: stats?.totalUsers, icon: <FaUsers />, color: '#0ea5e9', bg: '#e0f2fe' },
-        { title: 'Active Users', value: stats?.activeUsers, icon: <FaUserCheck />, color: '#10b981', bg: '#dcfce7' },
-        { title: 'Total Lost Posts', value: stats?.totalLostPosts, icon: <FaBoxOpen />, color: '#f59e0b', bg: '#fef3c7' },
-        { title: 'Total Found Posts', value: stats?.totalFoundPosts, icon: <FaHandHoldingHeart />, color: '#8b5cf6', bg: '#ede9fe' },
-        { title: 'Recovered Items', value: stats?.recoveredItems, icon: <FaCheckCircle />, color: '#10b981', bg: '#dcfce7' },
-        { title: 'Claims', value: stats?.claims, icon: <FaClipboardList />, color: '#6366f1', bg: '#e0e7ff' },
-        { title: 'Messages', value: stats?.messages, icon: <FaComments />, color: '#ec4899', bg: '#fce7f3' },
-        { title: 'Reports', value: stats?.reports, icon: <FaExclamationTriangle />, color: '#ef4444', bg: '#fee2e2' },
-        { title: 'Ratings', value: stats?.ratings, icon: <FaStar />, color: '#fbbf24', bg: '#fef3c7' },
-        { title: 'Rewards', value: stats?.rewards, icon: <FaGift />, color: '#f43f5e', bg: '#fff1f2' },
+        { title: 'Total Users', value: stats?.totalUsers || 0, icon: <FaUsers />, color: '#0ea5e9', bg: '#e0f2fe' },
+        { title: 'Active Users', value: stats?.activeUsers || 0, icon: <FaUserCheck />, color: '#10b981', bg: '#dcfce7' },
+        { title: 'Total Lost Posts', value: stats?.totalLostPosts || 0, icon: <FaBoxOpen />, color: '#f59e0b', bg: '#fef3c7' },
+        { title: 'Total Found Posts', value: stats?.totalFoundPosts || 0, icon: <FaHandHoldingHeart />, color: '#8b5cf6', bg: '#ede9fe' },
+        { title: 'Recovered Items', value: stats?.recoveredItems || 0, icon: <FaCheckCircle />, color: '#10b981', bg: '#dcfce7' },
+        { title: 'Claims', value: stats?.claims || 0, icon: <FaClipboardList />, color: '#6366f1', bg: '#e0e7ff' },
+        { title: 'Messages', value: stats?.messages || 0, icon: <FaComments />, color: '#ec4899', bg: '#fce7f3' },
+        { title: 'Reports', value: stats?.reports || 0, icon: <FaExclamationTriangle />, color: '#ef4444', bg: '#fee2e2' },
+        { title: 'Ratings', value: stats?.ratings || 0, icon: <FaStar />, color: '#fbbf24', bg: '#fef3c7' },
+        { title: 'Rewards', value: stats?.rewards || 0, icon: <FaGift />, color: '#f43f5e', bg: '#fff1f2' },
     ]
 
     return (
@@ -58,16 +61,22 @@ const AdminDashboard = () => {
                 ))}
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '2rem' }}>
                 <div className="admin-card">
                     <h3 style={{ marginTop: 0, marginBottom: '1.5rem' }}>Recent Activity</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        {[1, 2, 3, 4, 5].map(i => (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                        {[
+                            { text: 'New user registered', time: '5 mins ago', color: '#6366f1' },
+                            { text: 'Found item posted: iPhone 13', time: '12 mins ago', color: '#10b981' },
+                            { text: 'New claim submitted', time: '25 mins ago', color: '#f59e0b' },
+                            { text: 'Return confirmed by owner', time: '1 hour ago', color: '#8b5cf6' },
+                            { text: 'Support ticket resolved', time: '2 hours ago', color: '#ec4899' }
+                        ].map((activity, i) => (
                             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '1rem', paddingBottom: '1rem', borderBottom: '1px solid #f1f5f9' }}>
-                                <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#6366f1' }}></div>
+                                <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: activity.color }}></div>
                                 <div>
-                                    <p style={{ margin: 0, fontSize: '0.875rem', fontWeight: '600' }}>New user joined the platform</p>
-                                    <p style={{ margin: 0, fontSize: '0.75rem', color: '#64748b' }}>2 minutes ago</p>
+                                    <p style={{ margin: 0, fontSize: '0.875rem', fontWeight: '600' }}>{activity.text}</p>
+                                    <p style={{ margin: 0, fontSize: '0.75rem', color: '#64748b' }}>{activity.time}</p>
                                 </div>
                             </div>
                         ))}

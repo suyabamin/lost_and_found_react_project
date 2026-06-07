@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import AdminLayout from './AdminLayout'
-import axios from 'axios'
+import apiClient from '../../services/api'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -30,14 +30,17 @@ ChartJS.register(
 const AdminAnalytics = () => {
     const [data, setData] = useState(null)
     const [loading, setLoading] = useState(true)
+    const [error, setError] = useState(null)
 
     useEffect(() => {
         const fetchData = async () => {
+            setLoading(true)
             try {
-                const response = await axios.get('http://127.0.0.1:8000/api/admin/analytics', { withCredentials: true })
+                const response = await apiClient.get('/admin/analytics')
                 setData(response.data)
             } catch (err) {
                 console.error('Failed to fetch analytics:', err)
+                setError('Failed to load analytics data.')
             } finally {
                 setLoading(false)
             }
@@ -45,14 +48,16 @@ const AdminAnalytics = () => {
         fetchData()
     }, [])
 
-    if (loading) return <AdminLayout title="Analytics"><div>Loading...</div></AdminLayout>
+    if (loading) return <AdminLayout title="Analytics"><div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>Loading analytics...</div></AdminLayout>
+    
+    if (error) return <AdminLayout title="Analytics"><div style={{ padding: '40px', color: '#ef4444' }}>⚠️ {error}</div></AdminLayout>
 
     const userChartData = {
-        labels: data?.dailyUsers.map(u => u.date),
+        labels: data?.dailyUsers?.map(u => u.date) || [],
         datasets: [
             {
                 label: 'New Registrations',
-                data: data?.dailyUsers.map(u => u.count),
+                data: data?.dailyUsers?.map(u => u.count) || [],
                 borderColor: '#6366f1',
                 backgroundColor: 'rgba(99, 102, 241, 0.5)',
                 tension: 0.4
@@ -65,7 +70,7 @@ const AdminAnalytics = () => {
         datasets: [
             {
                 label: 'Count',
-                data: [data?.postStats.lost, data?.postStats.found, data?.postStats.recovered],
+                data: [data?.postStats?.lost || 0, data?.postStats?.found || 0, data?.postStats?.recovered || 0],
                 backgroundColor: ['#f59e0b', '#8b5cf6', '#10b981'],
             }
         ]
@@ -76,7 +81,12 @@ const AdminAnalytics = () => {
         datasets: [
             {
                 label: 'Total Count',
-                data: [data?.activity.messages, data?.activity.claims, data?.activity.rewards, data?.activity.ratings],
+                data: [
+                    data?.activity?.messages || 0, 
+                    data?.activity?.claims || 0, 
+                    data?.activity?.rewards || 0, 
+                    data?.activity?.ratings || 0
+                ],
                 backgroundColor: 'rgba(54, 162, 235, 0.5)',
                 borderColor: 'rgb(54, 162, 235)',
                 borderWidth: 1,
@@ -86,18 +96,20 @@ const AdminAnalytics = () => {
 
     return (
         <AdminLayout title="Growth Analytics">
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem', marginBottom: '2rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem', marginBottom: '2rem' }}>
                 <div className="admin-card">
-                    <h3 style={{ marginTop: 0, marginBottom: '2rem' }}>User Growth (Last 30 Days)</h3>
+                    <h3 style={{ marginTop: 0, marginBottom: '2rem' }}>User Growth (30 Days)</h3>
                     <Line data={userChartData} options={{ responsive: true, plugins: { legend: { position: 'top' } } }} />
                 </div>
                 <div className="admin-card">
                     <h3 style={{ marginTop: 0, marginBottom: '2rem' }}>Post Distribution</h3>
-                    <Pie data={postChartData} options={{ responsive: true }} />
+                    <div style={{ maxWidth: '300px', margin: '0 auto' }}>
+                        <Pie data={postChartData} options={{ responsive: true }} />
+                    </div>
                 </div>
             </div>
 
-            <div className="admin-card">
+            <div className="admin-card" style={{ marginTop: '2rem' }}>
                 <h3 style={{ marginTop: 0, marginBottom: '2rem' }}>Platform Activity Overview</h3>
                 <div style={{ height: '300px' }}>
                     <Bar data={activityData} options={{ maintainAspectRatio: false, plugins: { legend: { display: false } } }} />

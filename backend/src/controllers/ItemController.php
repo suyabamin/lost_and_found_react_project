@@ -75,13 +75,14 @@ class ItemController
         }
 
         $status = trim($data['status'] ?? 'lost');
-        $type = in_array($status, ['lost', 'found']) ? $status : 'lost';
+        if (!in_array($status, ['lost', 'found', 'resolved', 'processing'])) {
+            $status = 'lost';
+        }
 
-        $stmt = Database::connection()->prepare('INSERT INTO items (user_id, type, title, description, category, status, location, full_address, latitude, longitude, item_date, contact, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+        $stmt = Database::connection()->prepare('INSERT INTO items (user_id, title, description, category, status, location, full_address, latitude, longitude, item_date, contact, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
         try {
             $stmt->execute([
                 $user['id'],
-                $type,
                 trim($data['title'] ?? ''),
                 trim($data['description'] ?? $data['desc'] ?? ''),
                 trim($data['category'] ?? ''),

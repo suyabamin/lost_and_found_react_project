@@ -36,7 +36,7 @@ class TrackingController
 
         $stmt = $db->prepare('
             SELECT ts.*, 
-                   items.title AS item_title, items.image_url AS item_image, items.type AS item_type,
+                   items.title AS item_title, items.image_url AS item_image, items.status AS item_type,
                    owner.name AS owner_name, owner.current_lat AS owner_lat, owner.current_lng AS owner_lng, owner.avatar AS owner_avatar,
                    owner.bkash_number AS owner_bkash, owner.nagad_number AS owner_nagad, owner.rocket_number AS owner_rocket,
                    claimant.name AS claimant_name, claimant.current_lat AS claimant_lat, claimant.current_lng AS claimant_lng, claimant.avatar AS claimant_avatar,

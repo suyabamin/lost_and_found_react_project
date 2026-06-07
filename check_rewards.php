@@ -1,0 +1,1 @@
+<?php require_once " backend/src/bootstrap.php\; \ = Database::connection(); try { \ = \->query(\DESCRIBE rewards\); while(\ = \->fetch()) { print_r(\); } } catch(Exception \) { echo \ERROR: \ . \->getMessage(); }

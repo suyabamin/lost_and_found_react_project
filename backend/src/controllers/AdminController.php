@@ -9,16 +9,16 @@ class AdminController
         $db = Database::connection();
         
         $stats = [
-            'totalUsers' => (int) $db->query('SELECT COUNT(*) FROM users')->fetchColumn(),
-            'activeUsers' => (int) $db->query('SELECT COUNT(*) FROM users WHERE status = "active"')->fetchColumn(),
-            'totalLostPosts' => (int) $db->query('SELECT COUNT(*) FROM items WHERE type = "lost"')->fetchColumn(),
-            'totalFoundPosts' => (int) $db->query('SELECT COUNT(*) FROM items WHERE type = "found"')->fetchColumn(),
-            'recoveredItems' => (int) $db->query('SELECT COUNT(*) FROM items WHERE status = "resolved"')->fetchColumn(),
-            'claims' => (int) $db->query('SELECT COUNT(*) FROM claims')->fetchColumn(),
-            'messages' => (int) $db->query('SELECT COUNT(*) FROM messages')->fetchColumn(),
-            'reports' => (int) $db->query('SELECT COUNT(*) FROM reports')->fetchColumn(),
-            'ratings' => (int) $db->query('SELECT COUNT(*) FROM ratings')->fetchColumn(),
-            'rewards' => (int) $db->query('SELECT COUNT(*) FROM rewards WHERE status = "completed"')->fetchColumn(),
+            'totalUsers'      => (int) $db->query('SELECT COUNT(*) FROM users')->fetchColumn(),
+            'activeUsers'     => (int) $db->query('SELECT COUNT(*) FROM users WHERE status = "active"')->fetchColumn(),
+            'totalLostPosts'  => (int) $db->query('SELECT COUNT(*) FROM items WHERE status = "lost"')->fetchColumn(),
+            'totalFoundPosts' => (int) $db->query('SELECT COUNT(*) FROM items WHERE status = "found"')->fetchColumn(),
+            'recoveredItems'  => (int) $db->query('SELECT COUNT(*) FROM items WHERE status = "resolved"')->fetchColumn(),
+            'claims'          => (int) $db->query('SELECT COUNT(*) FROM claims')->fetchColumn(),
+            'messages'        => (int) $db->query('SELECT COUNT(*) FROM messages')->fetchColumn(),
+            'reports'         => (int) $db->query('SELECT COUNT(*) FROM reports')->fetchColumn(),
+            'ratings'         => (int) $db->query('SELECT COUNT(*) FROM ratings')->fetchColumn(),
+            'rewards'         => (int) $db->query('SELECT COUNT(*) FROM rewards')->fetchColumn(),
         ];
         
         Response::json($stats);
@@ -145,9 +145,9 @@ class AdminController
         $dailyUsers = $db->query("SELECT DATE(created_at) as date, COUNT(*) as count FROM users GROUP BY DATE(created_at) ORDER BY date DESC LIMIT 30")->fetchAll();
         
         // Fetch posts stats
-        $lostPosts = (int) $db->query('SELECT COUNT(*) FROM items WHERE type = "lost"')->fetchColumn();
-        $foundPosts = (int) $db->query('SELECT COUNT(*) FROM items WHERE type = "found"')->fetchColumn();
-        $recovered = (int) $db->query('SELECT COUNT(*) FROM items WHERE status = "resolved"')->fetchColumn();
+        $lostPosts  = (int) $db->query('SELECT COUNT(*) FROM items WHERE status = "lost"')->fetchColumn();
+        $foundPosts = (int) $db->query('SELECT COUNT(*) FROM items WHERE status = "found"')->fetchColumn();
+        $recovered  = (int) $db->query('SELECT COUNT(*) FROM items WHERE status = "resolved"')->fetchColumn();
         
         Response::json([
             'dailyUsers' => array_reverse($dailyUsers),
@@ -171,15 +171,15 @@ class AdminController
         $db = Database::connection();
         
         Response::json([
-            'totalUsers' => (int) $db->query('SELECT COUNT(*) FROM users')->fetchColumn(),
-            'totalAdmins' => (int) $db->query('SELECT COUNT(*) FROM users WHERE role = "admin"')->fetchColumn(),
-            'activeTracking' => (int) $db->query('SELECT COUNT(*) FROM tracking_sessions WHERE status = "active"')->fetchColumn(),
-            'completedReturns' => (int) $db->query('SELECT COUNT(*) FROM tracking_sessions WHERE status = "completed"')->fetchColumn(),
-            'totalRewards' => (int) $db->query('SELECT COUNT(*) FROM rewards WHERE status = "completed"')->fetchColumn(),
-            'totalRewardAmount' => (float) $db->query('SELECT SUM(amount) FROM rewards WHERE status = "completed"')->fetchColumn(),
-            'averageRating' => (float) $db->query('SELECT AVG(rating) FROM ratings')->fetchColumn(),
-            'topFinders' => $db->query("SELECT u.name, COUNT(*) as found_count FROM items i JOIN users u ON i.user_id = u.id WHERE i.type = 'found' AND i.status = 'resolved' GROUP BY u.id ORDER BY found_count DESC LIMIT 5")->fetchAll(),
-            'topContributors' => $db->query("SELECT u.name, (SELECT COUNT(*) FROM items WHERE user_id = u.id) as post_count FROM users u ORDER BY post_count DESC LIMIT 5")->fetchAll()
+            'totalUsers'        => (int)   $db->query('SELECT COUNT(*) FROM users')->fetchColumn(),
+            'totalAdmins'       => (int)   $db->query('SELECT COUNT(*) FROM users WHERE role = "admin"')->fetchColumn(),
+            'activeTracking'    => (int)   $db->query('SELECT COUNT(*) FROM tracking_sessions WHERE status = "active"')->fetchColumn(),
+            'completedReturns'  => (int)   $db->query('SELECT COUNT(*) FROM tracking_sessions WHERE status = "completed"')->fetchColumn(),
+            'totalRewards'      => (int)   $db->query('SELECT COUNT(*) FROM rewards')->fetchColumn(),
+            'totalRewardAmount' => (float) $db->query('SELECT COALESCE(SUM(amount), 0) FROM rewards')->fetchColumn(),
+            'averageRating'     => round((float) $db->query('SELECT COALESCE(AVG(rating), 0) FROM ratings')->fetchColumn(), 1),
+            'topFinders'        => $db->query("SELECT u.name, COUNT(*) as found_count FROM items i JOIN users u ON i.user_id = u.id WHERE i.status = 'found' GROUP BY u.id ORDER BY found_count DESC LIMIT 5")->fetchAll(),
+            'topContributors'   => $db->query("SELECT u.name, (SELECT COUNT(*) FROM items WHERE user_id = u.id) as post_count FROM users u ORDER BY post_count DESC LIMIT 5")->fetchAll()
         ]);
     }
 

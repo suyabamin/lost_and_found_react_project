@@ -72,7 +72,8 @@ const TrackingPage = () => {
   const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true)
   const [distance, setDistance] = useState(null)
-  const [error, setError] = useState(null)
+  const [sessionError, setSessionError] = useState(null)
+  const [locationError, setLocationError] = useState(null)
 
   const pollingRef = useRef(null)
 
@@ -90,21 +91,26 @@ const TrackingPage = () => {
 
   const requestLocationPermission = () => {
     if (!navigator.geolocation) {
-      setError('Geolocation is not supported by your browser.')
+      setLocationError('Geolocation is not supported by your browser. Location sharing is disabled.')
       return
     }
 
     navigator.geolocation.getCurrentPosition(
-      () => console.log('Location access granted'),
+      () => {
+        setLocationError(null)
+        console.log('Location access granted')
+      },
       (err) => {
-        console.error(err)
-        Swal.fire({
-          icon: 'warning',
-          title: 'Location Required',
-          text: 'Tracking requires GPS access. Please enable it in your browser.',
-        })
-        setError('Location permission denied.')
-      }
+        console.warn('Location denied:', err.message)
+        if (err.code === 1) {
+          setLocationError('GPS access denied. Your location will not be shared, but you can still view the session.')
+        } else if (err.code === 2) {
+          setLocationError('Location unavailable. Your GPS may be off.')
+        } else {
+          setLocationError('Location request timed out.')
+        }
+      },
+      { timeout: 10000, enableHighAccuracy: true }
     )
   }
 
@@ -132,7 +138,7 @@ const TrackingPage = () => {
       }
     } catch (err) {
       console.error(err)
-      if (firstLoad) setError('Failed to load tracking session.')
+      if (firstLoad) setSessionError('Failed to load tracking session. Please go back and try again.')
     } finally {
       if (firstLoad) setLoading(false)
     }
@@ -167,7 +173,7 @@ const TrackingPage = () => {
   }
 
   if (loading) return <div className="loading-screen"><FaSpinner className="animate-spin" /></div>
-  if (error) return <div className="error-screen">{error}</div>
+  if (sessionError) return <div className="error-screen">{sessionError}</div>
   if (!session) return <div>Session not found.</div>
 
   const isOwner = Number(user.id) === Number(session.owner_id)
@@ -195,6 +201,23 @@ const TrackingPage = () => {
             <FaChevronLeft /> Back
           </button>
           <h1>Live Tracking</h1>
+          {locationError && (
+            <div style={{
+              background: '#fef3c7',
+              border: '1px solid #f59e0b',
+              borderRadius: '8px',
+              padding: '8px 12px',
+              fontSize: '12px',
+              color: '#92400e',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              marginTop: '8px'
+            }}>
+              <FaLocationArrow style={{ flexShrink: 0 }} />
+              {locationError}
+            </div>
+          )}
           <div className={styles.itemInfo}>
             <img src={session.item_image} className={styles.itemThumb} alt="" />
             <div>
