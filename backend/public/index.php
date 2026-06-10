@@ -18,6 +18,7 @@ $router->get('/api/auth/me', [AuthController::class, 'me']);
 $router->post('/api/profile', [ProfileController::class, 'update']);
 $router->post('/api/profile/password', [ProfileController::class, 'password']);
 $router->get('/api', function() { Response::json(['status' => 'API is running']); });
+$router->get('/api/system/stats', [SystemController::class, 'stats']);
 $router->get('/', function() { Response::json(['status' => 'API is running', 'message' => 'Use /api endpoints']); });
 
 $router->get('/api/profile/posts', [ProfileController::class, 'posts']);

@@ -7,6 +7,7 @@ import styles from '../styles/pages/Dashboard.module.css'
 import itemsService from '../services/itemsService'
 import authService from '../services/authService'
 import { FaEye, FaHandshake, FaUsers, FaSearch, FaBell, FaHome, FaCompass, FaPlus, FaUser, FaLaptopCode, FaPaw, FaBriefcase, FaKey, FaFileAlt, FaGem, FaList, FaComments, FaComment, FaHandPaper, FaMap, FaHeart, FaShieldAlt, FaChartLine, FaClock, FaArrowRight } from 'react-icons/fa'
+import apiClient from '../services/api'
 
 const DashboardPage = () => {
   const { user } = useAuth()
@@ -52,16 +53,17 @@ const DashboardPage = () => {
     setLoading(true)
     try {
       const filters = filter === 'all' ? {} : { status: filter }
-      const [itemsRes, statsRes] = await Promise.all([
+      const [itemsRes, profileStatsRes, systemStatsRes] = await Promise.all([
         itemsService.getItems(filters),
-        authService.getProfileStats().catch(() => ({ data: { total_posts: 0, resolved: 0 } }))
+        authService.getProfileStats().catch(() => ({ data: { total_posts: 0, resolved: 0 } })),
+        apiClient.get('/system/stats').catch(() => ({ data: { active_listings: 0, successful_matches: 0, community_members: 0 } }))
       ])
       
       setPosts(itemsRes.data.items || [])
       setStats({
-        active: statsRes.data.total_posts || 0,
-        matches: statsRes.data.resolved || 0,
-        community: 1248 // Mock member count
+        active: systemStatsRes.data.active_listings,
+        matches: systemStatsRes.data.successful_matches,
+        community: systemStatsRes.data.community_members
       })
     } catch (err) {
       console.error('Failed to fetch dashboard data:', err)

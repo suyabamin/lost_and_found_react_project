@@ -9,6 +9,7 @@ ini_set('error_log', __DIR__ . '/debug.log');
 session_start([
     'cookie_httponly' => true,
     'cookie_samesite' => 'Lax',
+    'cookie_secure'   => false, // Set to false for local HTTP
 ]);
 
 // Basic .env loader
@@ -69,6 +70,14 @@ spl_autoload_register(function (string $class): void {
 function imageUrl(?string $path): ?string {
     if (!$path || trim((string)$path) === '') return null;
     if (str_starts_with($path, 'http') || str_starts_with($path, 'data:')) return $path;
-    $host = 'http://127.0.0.1:8000'; 
-    return $host . '/' . ltrim($path, '/');
+    
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https://" : "http://";
+    $host = $_SERVER['HTTP_HOST'] ?? '127.0.0.1:8000';
+    
+    // Ensure host doesn't already have protocol
+    if (!str_contains($host, '://')) {
+        $host = $protocol . $host;
+    }
+    
+    return rtrim($host, '/') . '/' . ltrim($path, '/');
 }

@@ -99,6 +99,16 @@ class ItemController
             $id = (int) Database::connection()->lastInsertId();
             error_log("[DATABASE] Item created with ID: " . $id);
             
+            // Handle verification questions
+            if (!empty($data['verification_questions']) && is_array($data['verification_questions'])) {
+                $qStmt = Database::connection()->prepare('INSERT INTO claim_questions (item_id, question_text) VALUES (?, ?)');
+                foreach ($data['verification_questions'] as $qText) {
+                    if (!empty(trim($qText))) {
+                        $qStmt->execute([$id, trim($qText)]);
+                    }
+                }
+            }
+
             // Create notification for the user
             NotificationController::createNotification(
                 (int) $user['id'],
@@ -154,6 +164,11 @@ class ItemController
         $trackingStmt->execute([$params['id'], $user['id'], $user['id']]);
         $tracking = $trackingStmt->fetch();
         $item['active_tracking_id'] = $tracking ? (int)$tracking['id'] : null;
+
+        // Fetch verification questions
+        $qStmt = Database::connection()->prepare('SELECT id, question_text FROM claim_questions WHERE item_id = ?');
+        $qStmt->execute([$params['id']]);
+        $item['verification_questions'] = $qStmt->fetchAll();
         
         Response::json(['item' => $item]);
     }

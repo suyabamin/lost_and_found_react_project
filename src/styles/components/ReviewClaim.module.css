@@ -1,0 +1,72 @@
+.reviewSection {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: var(--bg-soft, #f1f5f9);
+  border-radius: 12px;
+  border-left: 4px solid var(--primary, #00cfe8);
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.1rem;
+  color: var(--text-main, #1e293b);
+  margin-bottom: 1.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  font-weight: 700;
+}
+
+.answersGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.answerCard {
+  background: var(--card-bg, #ffffff);
+  padding: 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-color, #e2e8f0);
+}
+
+.questionSection {
+  margin-bottom: 0.75rem;
+}
+
+.qLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--primary, #00cfe8);
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.questionText {
+  font-weight: 600;
+  color: var(--text-main, #1e293b);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.answerSection {
+  padding-left: 1rem;
+  border-left: 2px dashed var(--border-color, #e2e8f0);
+}
+
+.aLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted, #64748b);
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.answerText {
+  color: var(--text-main, #1e293b);
+  font-size: 1rem;
+  line-height: 1.5;
+}

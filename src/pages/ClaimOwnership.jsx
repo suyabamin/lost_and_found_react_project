@@ -12,6 +12,7 @@ import {
 import itemsService from '../services/itemsService'
 import { useAuth } from '../context/AuthContext'
 import Swal from 'sweetalert2'
+import ClaimQuestionsForm from '../components/ClaimQuestionsForm'
 
 const ClaimOwnership = () => {
   const { id } = useParams()
@@ -24,6 +25,8 @@ const ClaimOwnership = () => {
   const [submitting, setSubmitting] = useState(false)
   const [proofImage, setProofImage] = useState(null)
   const [previewUrl, setPreviewUrl] = useState(null)
+  
+  const [answers, setAnswers] = useState({})
 
   const [formData, setFormData] = useState({
     fullName: user?.name || '',
@@ -89,6 +92,15 @@ const ClaimOwnership = () => {
       return
     }
 
+    // Check if all verification questions are answered
+    if (item?.verification_questions?.length > 0) {
+      const unanswered = item.verification_questions.filter(q => !answers[q.id] || !answers[q.id].trim());
+      if (unanswered.length > 0) {
+        Swal.fire('Verification Questions', 'Please answer all verification questions before submitting.', 'warning');
+        return;
+      }
+    }
+
     setSubmitting(true)
     try {
       const submitData = new FormData()
@@ -97,6 +109,12 @@ const ClaimOwnership = () => {
       submitData.append('proof_description', formData.proofDescription)
       submitData.append('contact_info', formData.phone)
       submitData.append('nid', formData.nid)
+      
+      // Append verification answers
+      Object.keys(answers).forEach(qId => {
+        submitData.append(`answers[${qId}]`, answers[qId]);
+      });
+
       if (proofImage) {
         submitData.append('proof_image', proofImage)
       }
@@ -258,6 +276,15 @@ const ClaimOwnership = () => {
               <div className={styles.hintText}>
                 <FaLightbulb /> Tip: Include as many specific details as possible to help verify your claim
               </div>
+            </div>
+
+            {/* Verification Questions Section */}
+            <div className={`${styles.formField} ${styles.full}`}>
+               <ClaimQuestionsForm 
+                 questions={item?.verification_questions} 
+                 answers={answers} 
+                 setAnswers={setAnswers} 
+               />
             </div>
 
             <div className={`${styles.formField} ${styles.full}`}>

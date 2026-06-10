@@ -16,10 +16,13 @@ class AuthController
         }
 
         $db = Database::connection();
+        error_log("[AUTH] Registering user: $email");
         $stmt = $db->prepare('INSERT INTO users (name, email, phone, password, role, status) VALUES (?, ?, ?, ?, ?, ?)');
         try {
             $stmt->execute([$name, $email, $data['phone'] ?? null, password_hash($password, PASSWORD_DEFAULT), 'user', 'active']);
+            error_log("[DATABASE] User inserted successfully: $email");
         } catch (PDOException $e) {
+            error_log("[DATABASE] Registration failed for $email: " . $e->getMessage());
             Response::error('Email already exists.', 422);
         }
 
@@ -43,19 +46,23 @@ class AuthController
     {
         $data = Request::input();
         $email = $data['email'] ?? '';
-
+        error_log("[AUTH] Attemping login for: $email");
         $db = Database::connection();
         $stmt = $db->prepare('SELECT id, name, email, phone, role, status, password, avatar, bio, location, bkash_number, nagad_number, rocket_number FROM users WHERE email = ? LIMIT 1');
         $stmt->execute([$email]);
         $user = $stmt->fetch();
-
+        
         if (!$user) {
+            error_log("[LOGIN] Email not found: $email");
             Response::error('Invalid email or password.', 401);
         }
 
         if (!password_verify($data['password'] ?? '', $user['password'])) {
+            error_log("[LOGIN] Password mismatch for: $email");
             Response::error('Invalid email or password.', 401);
         }
+        
+        error_log("[LOGIN] Success: User found and verified: $email");
 
         if ($user['status'] === 'banned') {
             Response::error('Your account has been banned. Please contact support.', 403);

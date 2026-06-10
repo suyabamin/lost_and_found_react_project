@@ -62,6 +62,16 @@ class ClaimController
         
         $claimId = (int) $db->lastInsertId();
         
+        // Handle verification answers
+        if (!empty($data['answers']) && is_array($data['answers'])) {
+            $aStmt = $db->prepare('INSERT INTO claim_answers (claim_id, question_id, answer_text) VALUES (?, ?, ?)');
+            foreach ($data['answers'] as $qId => $answer) {
+                if (!empty(trim((string)$answer))) {
+                    $aStmt->execute([$claimId, (int)$qId, trim((string)$answer)]);
+                }
+            }
+        }
+        
         // Notify item owner — store claim_id in the notification's reference_id column
         $notifMsg = "{$user['name']} submitted a claim for your post \"{$item['title']}\". Click to review.";
         self::createClaimNotification(
@@ -119,6 +129,16 @@ class ClaimController
         $claim['item_image'] = imageUrl($claim['item_image']);
         $claim['proof_image'] = imageUrl($claim['proof_image']);
         $claim['claimant_avatar'] = imageUrl($claim['claimant_avatar']);
+
+        // Fetch questions and answers
+        $qaStmt = $db->prepare(
+            'SELECT cq.question_text, ca.answer_text 
+             FROM claim_answers ca
+             JOIN claim_questions cq ON cq.id = ca.question_id
+             WHERE ca.claim_id = ?'
+        );
+        $qaStmt->execute([$claimId]);
+        $claim['answers'] = $qaStmt->fetchAll();
 
         Response::json(['claim' => $claim]);
     }

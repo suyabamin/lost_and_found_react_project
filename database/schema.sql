@@ -40,6 +40,7 @@ CREATE TABLE users (
   rocket_number   VARCHAR(20)   NULL,
   current_lat     DECIMAL(10, 8) NULL,
   current_lng     DECIMAL(11, 8) NULL,
+  status          ENUM('active','banned','suspended') NOT NULL DEFAULT 'active',
   created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -180,7 +181,7 @@ CREATE TABLE notifications (
   user_id      INT NOT NULL,
   title        VARCHAR(160) NOT NULL,
   message      TEXT NOT NULL,
-  type         ENUM('message','claim','claim_approved','claim_rejected','match','system','favorite','tracking','reward','rating','return') NOT NULL DEFAULT 'system',
+  type         ENUM('message','claim','claim_approved','claim_rejected','match','system','favorite','tracking','reward','rating','return','admin_alert') NOT NULL DEFAULT 'system',
   reference_id VARCHAR(255) NULL,
   is_read      TINYINT(1)   NOT NULL DEFAULT 0,
   created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

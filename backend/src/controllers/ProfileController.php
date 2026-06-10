@@ -167,7 +167,7 @@ class ProfileController
         $s1->execute([$user['id']]);
         $totalPosts = (int) $s1->fetchColumn();
 
-        $s2 = $db->prepare('SELECT COUNT(*) FROM history WHERE user_id = ? AND (action_type = "item_returned" OR action_type = "item_recovered")');
+        $s2 = $db->prepare('SELECT COUNT(*) FROM items WHERE user_id = ? AND status = "resolved"');
         $s2->execute([$user['id']]);
         $resolved = (int) $s2->fetchColumn();
 

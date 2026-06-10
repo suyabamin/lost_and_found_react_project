@@ -8,6 +8,7 @@ import { FaTrash, FaArrowRight, FaSpinner } from 'react-icons/fa'
 import itemsService from '../services/itemsService'
 import Swal from 'sweetalert2'
 import LocationPicker from '../components/LocationPicker'
+import VerificationQuestionsSection from '../components/VerificationQuestionsSection'
 
 const CreatePostPage = () => {
   const navigate = useNavigate()
@@ -22,6 +23,7 @@ const CreatePostPage = () => {
     longitude: null,
     date: '',
   })
+  const [verificationQuestions, setVerificationQuestions] = useState([])
   const [images, setImages] = useState([])
   const [dragover, setDragover] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -95,6 +97,7 @@ const CreatePostPage = () => {
     try {
       const postData = {
         ...formData,
+        verification_questions: verificationQuestions,
         image_url: images.length > 0 ? images[0] : null // Use first image as main
       }
       
@@ -243,6 +246,13 @@ const CreatePostPage = () => {
                   className={styles.input}
                   value={formData.date}
                   onChange={handleInputChange}
+                />
+              </div>
+
+              <div className={styles.formGroup}>
+                <VerificationQuestionsSection 
+                  questions={verificationQuestions} 
+                  setQuestions={setVerificationQuestions} 
                 />
               </div>
 

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
 import notificationsService from '../services/notificationsService'
 import claimsService from '../services/claimsService'
+import ReviewClaimAnswers from '../components/ReviewClaimAnswers'
 import Swal from 'sweetalert2'
 import {
   FaBell, FaCheckCircle, FaInfoCircle,
@@ -76,6 +77,9 @@ const ClaimModal = ({ claim, onClose, onApprove, onDeny, loading }) => {
             <p className={styles.modalText}>{claim.proof_description}</p>
           </div>
         )}
+
+        {/* Verification Questions Answers */}
+        <ReviewClaimAnswers answers={claim.answers} />
 
         {/* Proof image */}
         {claim.proof_image && (
