@@ -5,7 +5,7 @@ import authService from '../../services/authService'
 import Header from '../../components/Header'
 import Footer from '../../components/Footer'
 import styles from '../../styles/pages/AuthPages.module.css'
-import { FaHeart, FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaSpinner } from 'react-icons/fa'
+import { FaHeart, FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaSpinner, FaCheckCircle, FaRobot, FaComments, FaPhone } from 'react-icons/fa'
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -37,13 +37,8 @@ const RegisterPage = () => {
       return
     }
 
-    if (formData.password.length < 8) {
-      setError('Password must be at least 8 characters')
-      return
-    }
-
-    if (!formData.name.trim()) {
-      setError('Please enter your full name')
+    if (formData.password.length < 5) {
+      setError('Password is too short')
       return
     }
 
@@ -65,9 +60,8 @@ const RegisterPage = () => {
         navigate('/dashboard')
       }, 1500)
     } catch (err) {
-      const errorMsg = err.response?.data?.message || err.message || 'Registration failed. Please try again.'
+      const errorMsg = err.response?.data?.message || err.message || 'Registration failed.'
       setError(errorMsg)
-      console.error('Registration error:', err)
     } finally {
       setLoading(false)
     }
@@ -76,37 +70,51 @@ const RegisterPage = () => {
   return (
     <div className={styles.authPage}>
       <Header />
-      <div className={styles.container}>
-        <div className={styles.formWrapper}>
-          <div className={styles.brandSection}>
+      
+      <main className={styles.authContent}>
+        <div className={styles.authContainer}>
+          {/* Brand Panel */}
+          <div className={styles.brandPanel}>
             <div className={styles.logo}>
               <FaHeart /> Lost & Found
             </div>
-            <h1>Join Our Community</h1>
-            <p>Create an account and start reuniting lost items with their owners</p>
-            <ul className={styles.features}>
-              <li>✓ Post and find lost items</li>
-              <li>✓ AI-powered matching system</li>
-              <li>✓ Secure messaging</li>
+            <h1>Start reuniting today.</h1>
+            <p>Create an account and join our global community dedicated to finding what was lost.</p>
+            
+            <ul className={styles.featureList}>
+              <li className={styles.featureItem}>
+                <div className={styles.featureIcon}><FaCheckCircle /></div>
+                <span>Post and find items easily</span>
+              </li>
+              <li className={styles.featureItem}>
+                <div className={styles.featureIcon}><FaRobot /></div>
+                <span>AI-powered smart matching</span>
+              </li>
+              <li className={styles.featureItem}>
+                <div className={styles.featureIcon}><FaComments /></div>
+                <span>Encrypted secure messaging</span>
+              </li>
             </ul>
           </div>
 
-          <div className={styles.formSection}>
-            <h2>Sign Up</h2>
-            <p>Create your account in just a few steps</p>
+          {/* Form Panel */}
+          <div className={styles.formPanel}>
+            <h2>Create Account</h2>
+            <p className={styles.subtitle}>Fill in the details below to join us</p>
 
-            {error && <div className={styles.error}>{error}</div>}
-            {success && <div className={styles.success}>{success}</div>}
+            {error && <div className={styles.errorMsg}>{error}</div>}
+            {success && <div className={styles.successMsg}>{success}</div>}
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className={styles.form}>
               <div className={styles.formGroup}>
-                <label>Full Name</label>
+                <label className={styles.label}>Full Name</label>
                 <div className={styles.inputWrapper}>
-                  <FaUser className={styles.icon} />
+                  <FaUser className={styles.inputIcon} />
                   <input
                     type="text"
                     name="name"
-                    placeholder="Enter your full name"
+                    className={styles.input}
+                    placeholder="Enter your name"
                     value={formData.name}
                     onChange={handleChange}
                     required
@@ -115,13 +123,14 @@ const RegisterPage = () => {
               </div>
 
               <div className={styles.formGroup}>
-                <label>Email Address</label>
+                <label className={styles.label}>Email Address</label>
                 <div className={styles.inputWrapper}>
-                  <FaEnvelope className={styles.icon} />
+                  <FaEnvelope className={styles.inputIcon} />
                   <input
                     type="email"
                     name="email"
-                    placeholder="Enter your email"
+                    className={styles.input}
+                    placeholder="name@example.com"
                     value={formData.email}
                     onChange={handleChange}
                     required
@@ -130,12 +139,14 @@ const RegisterPage = () => {
               </div>
 
               <div className={styles.formGroup}>
-                <label>Phone Number</label>
+                <label className={styles.label}>Phone Number</label>
                 <div className={styles.inputWrapper}>
+                  <FaPhone className={styles.inputIcon} />
                   <input
                     type="tel"
                     name="phone"
-                    placeholder="+880 1234-567890"
+                    className={styles.input}
+                    placeholder="+880 1XXX-XXXXXX"
                     value={formData.phone}
                     onChange={handleChange}
                   />
@@ -143,13 +154,14 @@ const RegisterPage = () => {
               </div>
 
               <div className={styles.formGroup}>
-                <label>Password</label>
+                <label className={styles.label}>Password</label>
                 <div className={styles.inputWrapper}>
-                  <FaLock className={styles.icon} />
+                  <FaLock className={styles.inputIcon} />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     name="password"
-                    placeholder="Enter your password (min 8 characters)"
+                    className={styles.input}
+                    placeholder="Create a password"
                     value={formData.password}
                     onChange={handleChange}
                     required
@@ -157,7 +169,7 @@ const RegisterPage = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className={styles.togglePassword}
+                    className={styles.togglePass}
                   >
                     {showPassword ? <FaEyeSlash /> : <FaEye />}
                   </button>
@@ -165,13 +177,14 @@ const RegisterPage = () => {
               </div>
 
               <div className={styles.formGroup}>
-                <label>Confirm Password</label>
+                <label className={styles.label}>Confirm Password</label>
                 <div className={styles.inputWrapper}>
-                  <FaLock className={styles.icon} />
+                  <FaLock className={styles.inputIcon} />
                   <input
                     type="password"
                     name="confirmPassword"
-                    placeholder="Confirm your password"
+                    className={styles.input}
+                    placeholder="Repeat password"
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     required
@@ -179,18 +192,18 @@ const RegisterPage = () => {
                 </div>
               </div>
 
-              <label className={styles.terms}>
+              <label className={styles.termsLabel}>
                 <input type="checkbox" required />
-                I agree to the Terms of Service and Privacy Policy
+                <span>I agree to the <b>Terms of Service</b> and <b>Privacy Policy</b></span>
               </label>
 
               <button type="submit" className={styles.submitBtn} disabled={loading}>
                 {loading ? (
                   <>
-                    <FaSpinner style={{ animation: 'spin 1s linear infinite' }} /> Creating Account...
+                    <FaSpinner className="spin" /> Creating Account...
                   </>
                 ) : (
-                  'Create Account'
+                  'Join the Community'
                 )}
               </button>
             </form>
@@ -200,7 +213,8 @@ const RegisterPage = () => {
             </div>
           </div>
         </div>
-      </div>
+      </main>
+
       <Footer />
     </div>
   )

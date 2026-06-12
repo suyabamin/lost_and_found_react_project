@@ -10,6 +10,8 @@ import Swal from 'sweetalert2'
 import LocationPicker from '../components/LocationPicker'
 import VerificationQuestionsSection from '../components/VerificationQuestionsSection'
 
+import BackButton from '../components/BackButton'
+
 const CreatePostPage = () => {
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
@@ -127,15 +129,15 @@ const CreatePostPage = () => {
     <div className={styles.createPostPage}>
       <Sidebar />
       <main className={styles.mainContent}>
-        {/* Page Header */}
-        <div className={styles.pageHeader}>
-          <div className={styles.pageTitle}>
-            <h1>Post an Item</h1>
-            <p>Report a lost or found item with photos and details</p>
-          </div>
-        </div>
-
         <div className={styles.contentArea}>
+          <BackButton />
+          {/* Page Header */}
+          <div className={styles.pageHeader}>
+            <div className={styles.pageTitle}>
+              <h1>Post an Item</h1>
+              <p>Report a lost or found item with photos and details</p>
+            </div>
+          </div>
           <form onSubmit={handleSubmit} className={styles.formGrid}>
             {/* Left Column - Form */}
             <div className={styles.formSection}>

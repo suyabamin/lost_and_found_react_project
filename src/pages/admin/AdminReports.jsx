@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import AdminLayout from './AdminLayout'
-import axios from 'axios'
+import adminService from '../../services/adminService'
 import Swal from 'sweetalert2'
 
 const AdminReports = () => {
@@ -10,7 +10,7 @@ const AdminReports = () => {
     useEffect(() => {
         const fetchReports = async () => {
             try {
-                const response = await axios.get('http://127.0.0.1:8000/api/admin/reports', { withCredentials: true })
+                const response = await adminService.getReports()
                 setReports(response.data)
             } catch (err) {
                 console.error('Failed to fetch reports:', err)

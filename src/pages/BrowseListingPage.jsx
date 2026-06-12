@@ -1,8 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
+import BackButton from '../components/BackButton'
 import styles from '../styles/pages/BrowseListing.module.css'
-import { FaSearch, FaTimes, FaPlus, FaLaptopCode, FaPaw, FaBriefcase, FaKey, FaFileAlt, FaGem, FaChevronRight } from 'react-icons/fa'
+import { 
+  FaSearch, FaTimes, FaPlus, FaLaptopCode, FaPaw, FaBriefcase, FaKey, FaFileAlt, FaGem, 
+  FaChevronRight, FaMapMarkerAlt, FaClock 
+} from 'react-icons/fa'
 import itemsService from '../services/itemsService'
 import { getLocalItems } from '../utils/localItems'
 
@@ -60,7 +64,7 @@ const BrowseListingPage = () => {
     const location = listing.location || ''
     const listingCategory = listing.category || ''
     const matchesFilter = filter === 'all' || listing.status === filter
-    const matchesCategory = !categoryLabel || listingCategory === categoryLabel
+    const matchesCategory = !categoryLabel || listingCategory.toLowerCase() === categoryLabel.toLowerCase()
     const matchesSearch =
       title.toLowerCase().includes(search.toLowerCase()) ||
       location.toLowerCase().includes(search.toLowerCase()) ||
@@ -74,12 +78,6 @@ const BrowseListingPage = () => {
       <Sidebar />
       <main className={styles.mainContent}>
         <div className={styles.pageHeader}>
-          <div className={styles.breadcrumb}>
-            <Link to="/dashboard">Home</Link>
-            <FaChevronRight className={styles.breadIcon} />
-            <span className={styles.activeBread}>{categoryLabel || 'Browse Listings'}</span>
-          </div>
-
           <div className={styles.headerContent}>
             {currentMeta?.icon && (
               <div className={styles.headerIconLarge}>
@@ -87,19 +85,19 @@ const BrowseListingPage = () => {
               </div>
             )}
             <div className={styles.pageTitle}>
-              <h1>{categoryLabel ? `${categoryLabel} Listings` : 'Browse Listings'}</h1>
-              <p>{currentMeta?.desc || 'Search and browse lost and found items in your area'}</p>
-              {categoryLabel && (
-                <div className={styles.headerStats}>
-                  <span><FaPlus style={{ fontSize: '10px' }} /> Updated just now</span>
-                  <span>• {filteredListings.length} active listings</span>
-                </div>
-              )}
+              <h1>{categoryLabel ? `${categoryLabel} Market` : 'Discovery Marketplace'}</h1>
+              <p>{currentMeta?.desc || 'Explore recent lost and found listings in the community'}</p>
+              <div className={styles.headerStats}>
+                 <span><FaClock /> Just Updated</span>
+                 <span>• {filteredListings.length} Unique Listings</span>
+              </div>
             </div>
             <div className={styles.pageActions}>
-              <button className={styles.actionBtn} onClick={() => navigate('/map')}>View Map</button>
-              <button className={styles.actionBtn} onClick={() => navigate('/post/create')}>
-                <FaPlus /> Post Item
+              <button className="btn-premium btn-secondary" onClick={() => navigate('/map')}>
+                 <FaMapMarkerAlt /> Explore Map
+              </button>
+              <button className="btn-premium btn-primary" onClick={() => navigate('/post/create')}>
+                <FaPlus /> New Listing
               </button>
             </div>
           </div>
@@ -108,24 +106,15 @@ const BrowseListingPage = () => {
         <div className={styles.contentArea}>
           <div className={styles.filterBar}>
             <div className={styles.filterChips}>
-              <button
-                className={`${styles.chip} ${filter === 'all' ? styles.active : ''}`}
-                onClick={() => setFilter('all')}
-              >
-                All Items
-              </button>
-              <button
-                className={`${styles.chip} ${filter === 'lost' ? styles.active : ''}`}
-                onClick={() => setFilter('lost')}
-              >
-                Lost Items
-              </button>
-              <button
-                className={`${styles.chip} ${filter === 'found' ? styles.active : ''}`}
-                onClick={() => setFilter('found')}
-              >
-                Found Items
-              </button>
+              {['all', 'lost', 'found'].map(v => (
+                <button
+                  key={v}
+                  className={`${styles.chip} ${filter === v ? styles.active : ''}`}
+                  onClick={() => setFilter(v)}
+                >
+                  {v.charAt(0).toUpperCase() + v.slice(1)} Items
+                </button>
+              ))}
             </div>
 
             <div className={styles.searchContainer}>
@@ -133,12 +122,12 @@ const BrowseListingPage = () => {
               <input
                 type="text"
                 className={styles.searchInput}
-                placeholder="Search listings..."
+                placeholder="Search by title, location or keywords..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
               {search && (
-                <button className={styles.clearBtn} onClick={() => setSearch('')} aria-label="Clear search">
+                <button className={styles.clearBtn} onClick={() => setSearch('')}>
                   <FaTimes />
                 </button>
               )}
@@ -146,27 +135,28 @@ const BrowseListingPage = () => {
           </div>
 
           {loading ? (
-            <div className={styles.emptyState}>
-              <h3>Loading listings...</h3>
-              <p>Please wait while items are loaded.</p>
+            <div className={styles.listingsGrid}>
+               {Array(4).fill(0).map((_, i) => <div key={i} style={{height: '380px'}} className="premium-card shimmer" />)}
             </div>
           ) : filteredListings.length > 0 ? (
             <div className={styles.listingsGrid}>
               {filteredListings.map((listing) => (
                 <Link key={listing.id} to={`/post/${listing.id}`} className={styles.listingCard}>
-                  <img
-                    src={listing.image_url || 'https://via.placeholder.com/280x200?text=Item'}
-                    alt={listing.title}
-                    className={styles.listingImage}
-                  />
-                  <div className={styles.listingBody}>
+                  <div className={styles.imageArea}>
                     <span className={`${styles.listingBadge} ${styles[listing.status]}`}>
-                      {listing.status === 'lost' ? 'Lost' : 'Found'}
+                      {listing.status}
                     </span>
+                    <img
+                      src={listing.image_url || 'https://via.placeholder.com/400x300?text=Listing+Image'}
+                      alt={listing.title}
+                      className={styles.listingImage}
+                    />
+                  </div>
+                  <div className={styles.listingBody}>
                     <h3 className={styles.listingTitle}>{listing.title}</h3>
                     <div className={styles.listingMeta}>
-                      <span>{listing.location}</span>
-                      <span>{listing.time || listing.date || 'Recently'}</span>
+                      <span><FaMapMarkerAlt /> {listing.location}</span>
+                      <span><FaClock /> {listing.time || listing.date || 'New'}</span>
                     </div>
                   </div>
                 </Link>
@@ -174,13 +164,17 @@ const BrowseListingPage = () => {
             </div>
           ) : (
             <div className={styles.emptyState}>
-              <h3>No listings found</h3>
-              <p>Try adjusting your filters or search terms</p>
+               <div style={{fontSize: '50px', marginBottom: '16px'}}>🔭</div>
+               <h3>No Listings Found</h3>
+               <p>We couldn't find any items matching your current filters in this category.</p>
+               <button className="btn-premium btn-primary" style={{marginTop: '20px'}} onClick={() => {setSearch(''); setFilter('all')}}>
+                 Reset Discovery Filters
+               </button>
             </div>
           )}
 
-          {!loading && filteredListings.length > 0 && (
-            <button className={styles.loadMoreBtn}>Load more listings</button>
+          {!loading && filteredListings.length > 8 && (
+            <button className={styles.loadMoreBtn}>View More Postings</button>
           )}
         </div>
       </main>

@@ -58,8 +58,9 @@ const AdminAnalytics = () => {
             {
                 label: 'New Registrations',
                 data: data?.dailyUsers?.map(u => u.count) || [],
-                borderColor: '#6366f1',
-                backgroundColor: 'rgba(99, 102, 241, 0.5)',
+                borderColor: 'var(--primary)',
+                backgroundColor: 'var(--primary-light)',
+                fill: true,
                 tension: 0.4
             }
         ]
@@ -71,7 +72,8 @@ const AdminAnalytics = () => {
             {
                 label: 'Count',
                 data: [data?.postStats?.lost || 0, data?.postStats?.found || 0, data?.postStats?.recovered || 0],
-                backgroundColor: ['#f59e0b', '#8b5cf6', '#10b981'],
+                backgroundColor: ['#f43f5e', 'var(--primary)', '#10b981'],
+                borderWidth: 0
             }
         ]
     }
@@ -87,9 +89,13 @@ const AdminAnalytics = () => {
                     data?.activity?.rewards || 0, 
                     data?.activity?.ratings || 0
                 ],
-                backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                borderColor: 'rgb(54, 162, 235)',
-                borderWidth: 1,
+                backgroundColor: [
+                    'rgba(0, 169, 181, 0.7)',
+                    'rgba(139, 92, 246, 0.7)',
+                    'rgba(245, 158, 11, 0.7)',
+                    'rgba(16, 185, 129, 0.7)'
+                ],
+                borderRadius: 8
             }
         ]
     }

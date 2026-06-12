@@ -12,7 +12,8 @@ import {
   FaPlus, FaUser, FaLaptopCode, FaPaw, FaBriefcase, FaKey, 
   FaFileAlt, FaGem, FaList, FaComments, FaComment, FaHandPaper, 
   FaMap, FaHeart, FaShieldAlt, FaChartLine, FaClock, FaArrowRight,
-  FaBoxOpen, FaTh, FaTimes, FaMapMarkerAlt, FaShoppingCart, FaExternalLinkAlt
+  FaBoxOpen, FaTh, FaTimes, FaMapMarkerAlt, FaShoppingCart, FaExternalLinkAlt,
+  FaCalendarAlt, FaStar
 } from 'react-icons/fa'
 
 const DashboardPage = () => {
@@ -86,7 +87,7 @@ const DashboardPage = () => {
         <header className={styles.topHeader}>
           <div className={styles.headerLeft}>
             <div className={styles.greeting}>
-              <h1 style={{fontSize: '16px'}}>Welcome back, <b>{user?.name?.split(' ')[0]}</b></h1>
+              <h1>Welcome, <b>{user?.name?.split(' ')[0]}</b> 👋</h1>
             </div>
           </div>
 
@@ -95,7 +96,7 @@ const DashboardPage = () => {
               <FaSearch className={styles.searchIcon} />
               <input 
                 type="text" 
-                placeholder="Search items by name, location or description..." 
+                placeholder="Search lost or found items..." 
                 value={searchKeyword}
                 onChange={(e) => setSearchKeyword(e.target.value)}
               />
@@ -106,11 +107,12 @@ const DashboardPage = () => {
             <button 
               className={`${styles.actionIconBtn} ${showQuickActions ? styles.activeHubBtn : ''}`}
               onClick={() => setShowQuickActions(true)}
+              title="Quick Access Hub"
             >
               <FaTh />
             </button>
             <NotificationBell />
-            <Link to="/profile" className={styles.actionIconBtn}>
+            <Link to="/profile" className={styles.actionIconBtn} title="My Profile">
               <FaUser />
             </Link>
           </div>
@@ -120,8 +122,8 @@ const DashboardPage = () => {
         {showQuickActions && (
           <div className={styles.quickActionsOverlay} onClick={() => setShowQuickActions(false)}>
             <div className={styles.quickActionsPanel} onClick={e => e.stopPropagation()}>
-              <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '24px'}}>
-                <h2 style={{margin: 0, fontSize: '20px'}}>Quick Access</h2>
+              <div className={styles.panelTitleRow}>
+                <h2>Navigation Hub</h2>
                 <button className={styles.actionIconBtn} onClick={() => setShowQuickActions(false)}><FaTimes /></button>
               </div>
               <div className={styles.hubGrid}>
@@ -142,35 +144,37 @@ const DashboardPage = () => {
             <div className={styles.statCard}>
               <div className={styles.statIcon}><FaBoxOpen /></div>
               <div className={styles.statInfo}>
+                <p>Postings</p>
                 <h3>{stats.active}</h3>
-                <p>Active Items</p>
               </div>
             </div>
             <div className={styles.statCard}>
               <div className={styles.statIcon}><FaHandshake /></div>
               <div className={styles.statInfo}>
-                <h3>{stats.matches}</h3>
                 <p>Recovered</p>
+                <h3>{stats.matches}</h3>
               </div>
             </div>
             <div className={styles.statCard}>
               <div className={styles.statIcon}><FaUsers /></div>
               <div className={styles.statInfo}>
+                <p>Active Users</p>
                 <h3>{stats.community}</h3>
-                <p>Users</p>
               </div>
             </div>
           </div>
 
-          {/* Categories Section - RESTORED */}
+          {/* Categories Section */}
           <section className={styles.categorySection}>
             <div className={styles.sectionHeader}>
-              <h2>Browse Categories</h2>
-              <Link to="/browse" style={{color: 'var(--accent)', textDecoration: 'none', fontSize: '14px', fontWeight: '600'}}>See All</Link>
+              <h2>Market Categories</h2>
+              <Link to="/browse" className={styles.sectionLink}>
+                Explore All <FaArrowRight fontSize="12px" />
+              </Link>
             </div>
             <div className={styles.categoryGrid}>
               {categories.map((cat) => (
-                <Link key={cat.id} to={`/browse?category=${cat.id}`} className={styles.categoryCard}>
+                <Link key={cat.id} to={`/category/${cat.id}`} className={styles.categoryCard}>
                   <div className={styles.catIcon}><cat.icon /></div>
                   <span>{cat.name}</span>
                 </Link>
@@ -178,28 +182,18 @@ const DashboardPage = () => {
             </div>
           </section>
 
-          {/* E-commerce Style Feed */}
+          {/* Marketplace Newsfeed */}
           <section className={styles.feedSection}>
             <div className={styles.sectionHeader}>
-              <h2>Recent Listings</h2>
-              <div style={{display: 'flex', gap: '8px'}}>
+              <h2>Marketplace Feed</h2>
+              <div className={styles.feedFilterRow}>
                 {['all', 'lost', 'found'].map(f => (
                   <button 
                     key={f}
+                    className={`${styles.feedFilterBtn} ${filter === f ? styles.active : ''}`}
                     onClick={() => setFilter(f)}
-                    style={{
-                      padding: '6px 16px',
-                      borderRadius: '8px',
-                      border: 'none',
-                      background: filter === f ? 'var(--primary)' : '#fff',
-                      color: filter === f ? '#fff' : 'var(--text-muted)',
-                      fontSize: '12px',
-                      fontWeight: '700',
-                      cursor: 'pointer',
-                      boxShadow: 'var(--shadow-sm)'
-                    }}
                   >
-                    {f.toUpperCase()}
+                    {f.charAt(0).toUpperCase() + f.slice(1)}
                   </button>
                 ))}
               </div>
@@ -207,50 +201,53 @@ const DashboardPage = () => {
 
             <div className={styles.ecomGrid}>
               {loading ? (
-                Array(6).fill(0).map((_, i) => <div key={i} style={{height: '350px', background: '#fff', borderRadius: '20px'}} className={styles.shimmer} />)
+                Array(6).fill(0).map((_, i) => <div key={i} className="shimmer" style={{height: '380px', borderRadius: 'var(--radius-xl)'}} />)
               ) : posts.length === 0 ? (
-                <div style={{gridColumn: '1/-1', textAlign: 'center', padding: '40px'}}>
-                  <p>No items found matching your criteria.</p>
+                <div className={styles.emptyListing}>
+                   <div style={{fontSize: '60px', marginBottom: '20px'}}>🔍</div>
+                   <h3>Nothing found yet</h3>
+                   <p>No items match your current filters. Try searching for something else or browse all listings.</p>
+                   <button className="btn-premium btn-primary" onClick={() => {setFilter('all'); setSearchKeyword('')}}>
+                     Browse All Listings
+                   </button>
                 </div>
               ) : (
                 posts.map((post) => (
-                  <div key={post.id} className={styles.productCard}>
-                    <div className={styles.productImageWrap}>
-                      <img src={post.image_url || 'https://via.placeholder.com/300x200?text=No+Image'} alt={post.title} className={styles.productImage} />
-                      <div className={styles.tagOverlay}>
-                        <span className={`${styles.statusBadge} ${styles[post.status]}`}>{post.status}</span>
-                      </div>
-                      <button className={styles.favAction} onClick={(e) => { e.stopPropagation(); navigate('/favorites') }}>
-                        <FaHeart />
-                      </button>
+                  <div key={post.id} className={styles.productCard} onClick={() => navigate(`/post/${post.id}`)}>
+                    <div className={styles.cardImageArea}>
+                      <span className={`${styles.statusBadge} ${styles[post.status]}`}>
+                        {post.status}
+                      </span>
+                      <img 
+                        src={post.image_url || 'https://via.placeholder.com/400x300?text=No+Image+Available'} 
+                        alt={post.title} 
+                        className={styles.productImage} 
+                        onError={(e) => { e.target.src = 'https://via.placeholder.com/400x300?text=No+Image' }}
+                      />
                     </div>
-                    
-                    <div className={styles.productInfo}>
-                      <div className={styles.productMeta}>
-                        <span className={styles.productCat}>{post.category || 'General'}</span>
-                        {post.reward_amount > 0 && (
-                          <span className={styles.rewardBadge}>৳{post.reward_amount} Reward</span>
-                        )}
-                      </div>
-                      <h3 className={styles.productTitle}>{post.title}</h3>
-                      <div className={styles.productLoc}>
-                        <FaMapMarkerAlt /> {post.location || 'Location N/A'}
+
+                    <div className={styles.cardBody}>
+                      <div className={styles.cardHeader}>
+                         <div className={styles.postTime}>
+                           <FaClock /> {new Date(post.created_at).toLocaleDateString()}
+                         </div>
                       </div>
                       
-                      <div className={styles.productFooter}>
-                        <div className={styles.ownerMini}>
-                           <img 
-                              src={`https://ui-avatars.com/api/?name=${encodeURIComponent(post.owner_name)}&background=random&size=32`} 
-                              alt="Owner" 
-                              className={styles.ownerAvatar}
-                           />
-                           <span className={styles.ownerName}>{post.owner_name}</span>
+                      <h3 className={styles.productTitle}>{post.title}</h3>
+                      <p className={styles.productDesc}>{post.description}</p>
+                      
+                      <div className={styles.cardFooter}>
+                        <div className={styles.locationInfo}>
+                          <FaMapMarkerAlt /> {post.location || 'Unknown'}
                         </div>
                         <button 
-                          className={styles.buyBtn}
-                          onClick={() => navigate(`/post/${post.id}`)}
+                          className={styles.claimBtn}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/post/${post.id}`)
+                          }}
                         >
-                          {post.status === 'found' ? 'Claim Now' : 'I Found It'}
+                          View Details
                         </button>
                       </div>
                     </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import AdminLayout from './AdminLayout'
-import axios from 'axios'
+import adminService from '../../services/adminService'
 import Swal from 'sweetalert2'
 
 const AdminPosts = () => {
@@ -9,7 +9,7 @@ const AdminPosts = () => {
 
     const fetchPosts = async () => {
         try {
-            const response = await axios.get('http://127.0.0.1:8000/api/admin/posts', { withCredentials: true })
+            const response = await adminService.getPosts()
             setPosts(response.data.posts)
         } catch (err) {
             console.error('Failed to fetch posts:', err)
@@ -24,7 +24,7 @@ const AdminPosts = () => {
 
     const handleAction = async (postId, action) => {
         try {
-            await axios.post(`http://127.0.0.1:8000/api/admin/posts/${postId}/action`, { action }, { withCredentials: true })
+            await adminService.postAction(postId, action)
             Swal.fire('Success', `Post ${action}ed successfully.`, 'success')
             fetchPosts()
         } catch (err) {
@@ -53,20 +53,20 @@ const AdminPosts = () => {
                         {posts.map(post => (
                             <tr key={post.id}>
                                 <td>
-                                    <div style={{ width: '48px', height: '48px', borderRadius: '8px', background: '#eee', overflow: 'hidden' }}>
-                                        <img src={post.image_url || 'https://via.placeholder.com/48'} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    <div style={{ width: '56px', height: '56px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-card-alt)', overflow: 'hidden' }}>
+                                        <img src={post.image_url || 'https://via.placeholder.com/56'} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                     </div>
                                 </td>
-                                <td style={{ fontWeight: 600 }}>{post.title}</td>
+                                <td style={{ fontWeight: 800, color: 'var(--text-heading)' }}>{post.title}</td>
                                 <td>
-                                    <span className={`badge`} style={{ background: post.type === 'lost' ? '#fee2e2' : '#dcfce7', color: post.type === 'lost' ? '#991b1b' : '#166534' }}>
+                                    <span className={`badge ${post.type === 'lost' ? 'badge-banned' : 'badge-active'}`}>
                                         {post.type}
                                     </span>
                                 </td>
                                 <td>
-                                    <span className="badge" style={{ background: '#f1f5f9', color: '#475569' }}>{post.status}</span>
+                                    <span className="badge" style={{ background: 'var(--bg-card-alt)', color: 'var(--text-body)' }}>{post.status}</span>
                                 </td>
-                                <td>User #{post.user_id}</td>
+                                <td style={{ fontWeight: 600 }}>User #{post.user_id}</td>
                                 <td>{new Date(post.created_at).toLocaleDateString()}</td>
                                 <td>
                                     <div style={{ display: 'flex', gap: '0.5rem' }}>

@@ -1,5 +1,5 @@
 .container {
-  background: var(--bg-soft);
+  background: var(--bg-main);
   min-height: 100vh;
 }
 
@@ -179,24 +179,26 @@
 
 .submitBtn {
   width: 100%;
-  padding: 16px;
-  background: #14b8a6;
+  padding: 18px;
+  background: var(--primary);
   color: white;
   border: none;
-  border-radius: 12px;
-  font-size: 18px;
-  font-weight: 700;
+  border-radius: var(--radius-xl);
+  font-size: 1.1rem;
+  font-weight: 900;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
-  transition: all 0.3s;
+  transition: var(--transition);
+  box-shadow: 0 8px 20px var(--primary-glow);
 }
 
 .submitBtn:hover:not(:disabled) {
-  background: #0d9488;
-  box-shadow: 0 8px 20px rgba(20, 184, 166, 0.3);
+  background: var(--primary-hover);
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px var(--primary-glow);
 }
 
 .submitBtn:disabled {

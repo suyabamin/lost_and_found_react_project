@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import AdminLayout from './AdminLayout'
-import apiClient from '../../services/api'
+import adminService from '../../services/adminService'
 import { FaCrown, FaUserGraduate, FaHandshake, FaMoneyBillWave, FaStar } from 'react-icons/fa'
 
 const AdminStats = () => {
@@ -12,7 +12,7 @@ const AdminStats = () => {
         const fetchStats = async () => {
             setLoading(true)
             try {
-                const response = await apiClient.get('/admin/stats')
+                const response = await adminService.getStats()
                 setStats(response.data)
             } catch (err) {
                 console.error('Failed to fetch admin stats:', err)

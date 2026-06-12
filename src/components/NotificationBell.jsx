@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { FaBell, FaCheck, FaCheckDouble, FaExternalLinkAlt, FaSpinner } from 'react-icons/fa'
 import apiClient from '../services/api'
+import Swal from 'sweetalert2'
 import styles from './NotificationBell.module.css'
 
 const NotificationBell = () => {
@@ -32,7 +33,35 @@ const NotificationBell = () => {
   const fetchUnreadCount = async () => {
     try {
       const res = await apiClient.get('/notifications/unread-count')
-      setUnreadCount(res.data.count)
+      const newCount = res.data.count
+      
+      // If count increased, show a toast for the newest notification
+      if (newCount > unreadCount) {
+        const notifRes = await apiClient.get('/notifications?limit=1')
+        const latest = notifRes.data.notifications?.[0]
+        
+        if (latest) {
+          const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 4000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+              toast.addEventListener('mouseenter', Swal.stopTimer)
+              toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+          })
+          
+          Toast.fire({
+            icon: 'info',
+            title: latest.title,
+            text: latest.message
+          })
+        }
+      }
+      
+      setUnreadCount(newCount)
     } catch (err) {
       console.error('Failed to fetch unread count', err)
     }
@@ -84,10 +113,23 @@ const NotificationBell = () => {
       }
       setShowDropdown(false)
       
+      let ref = {}
+      try {
+          if (n.reference_id && typeof n.reference_id === 'string' && n.reference_id.startsWith('{')) {
+              ref = JSON.parse(n.reference_id)
+          } else {
+              ref = { id: n.reference_id }
+          }
+      } catch (err) {
+          ref = { id: n.reference_id }
+      }
+
+      const refId = ref.claim_id || ref.conversation_id || ref.id
+      
       // Navigate based on type
-      if (n.type === 'message' && n.reference_id) navigate(`/chat/${n.reference_id}`)
-      else if (n.type === 'claim' && n.reference_id) navigate(`/post/${n.reference_id}`)
-      else if (n.type === 'tracking' && n.reference_id) navigate(`/tracking/${n.reference_id}`)
+      if (n.type === 'message' || n.type === 'claim_approved') navigate(`/chat/${refId || ''}`)
+      else if (n.type === 'claim' || n.type === 'admin_claim') navigate(`/notifications?openClaim=${refId || ''}`)
+      else if (n.type === 'tracking') navigate(`/tracking/${refId || ''}`)
       else navigate('/notifications')
   }
 

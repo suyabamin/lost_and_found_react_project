@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import AdminLayout from './AdminLayout'
-import axios from 'axios'
+import adminService from '../../services/adminService'
 import Swal from 'sweetalert2'
 
 const AdminUsers = () => {
@@ -9,7 +9,7 @@ const AdminUsers = () => {
 
     const fetchUsers = async () => {
         try {
-            const response = await axios.get('http://127.0.0.1:8000/api/admin/users', { withCredentials: true })
+            const response = await adminService.getUsers()
             setUsers(response.data.users)
         } catch (err) {
             console.error('Failed to fetch users:', err)
@@ -35,7 +35,7 @@ const AdminUsers = () => {
 
         if (result.isConfirmed) {
             try {
-                await axios.post('http://127.0.0.1:8000/api/admin/ban-user', { userId }, { withCredentials: true })
+                await adminService.banUser(userId)
                 Swal.fire('Banned!', 'User has been banned.', 'success')
                 fetchUsers()
             } catch (err) {
@@ -46,7 +46,7 @@ const AdminUsers = () => {
 
     const handleUnban = async (userId) => {
         try {
-            await axios.post('http://127.0.0.1:8000/api/admin/unban-user', { userId }, { withCredentials: true })
+            await adminService.unbanUser(userId)
             Swal.fire('Unbanned!', 'User access restored.', 'success')
             fetchUsers()
         } catch (err) {
@@ -56,7 +56,7 @@ const AdminUsers = () => {
 
     const handlePromote = async (userId) => {
         try {
-            await axios.post('http://127.0.0.1:8000/api/admin/promote-user', { userId }, { withCredentials: true })
+            await adminService.promoteUser(userId)
             Swal.fire('Promoted!', 'User is now an admin.', 'success')
             fetchUsers()
         } catch (err) {
@@ -66,7 +66,7 @@ const AdminUsers = () => {
 
     const handleDemote = async (userId) => {
         try {
-            await axios.post('http://127.0.0.1:8000/api/admin/demote-user', { userId }, { withCredentials: true })
+            await adminService.demoteUser(userId)
             Swal.fire('Demoted!', 'User role updated to normal user.', 'success')
             fetchUsers()
         } catch (err) {
@@ -97,13 +97,13 @@ const AdminUsers = () => {
                     <tbody>
                         {users.map(user => (
                             <tr key={user.id}>
-                                <td style={{ fontWeight: 'bold', color: '#6366f1' }}>#{user.id}</td>
+                                <td style={{ fontWeight: '800', color: 'var(--primary)' }}>#{user.id}</td>
                                 <td>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#eee', overflow: 'hidden' }}>
-                                            <img src={user.avatar || `https://ui-avatars.com/api/?name=${user.name}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                        <div style={{ width: '40px', height: '40px', border: '2px solid var(--border-color)', borderRadius: '50%', background: 'var(--bg-card-alt)', overflow: 'hidden' }}>
+                                            <img src={user.avatar || `https://ui-avatars.com/api/?name=${user.name}&background=00A9B5&color=fff`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                         </div>
-                                        {user.name}
+                                        <span style={{ fontWeight: '600' }}>{user.name}</span>
                                     </div>
                                 </td>
                                 <td>{user.email}</td>

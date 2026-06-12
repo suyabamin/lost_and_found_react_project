@@ -5,7 +5,7 @@ import authService from '../../services/authService'
 import Header from '../../components/Header'
 import Footer from '../../components/Footer'
 import styles from '../../styles/pages/AuthPages.module.css'
-import { FaHeart, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaSpinner } from 'react-icons/fa'
+import { FaHeart, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaSpinner, FaCheckCircle, FaUsers, FaShieldAlt } from 'react-icons/fa'
 
 const LoginPage = () => {
   const [email, setEmail] = useState('')
@@ -45,19 +45,32 @@ const LoginPage = () => {
   return (
     <div className={styles.authPage}>
       <Header />
-      <div className={styles.container}>
-        <div className={styles.formWrapper}>
-          <div className={styles.brandSection}>
+      
+      <main className={styles.authContent}>
+        <div className={styles.authContainer}>
+          {/* Brand Panel */}
+          <div className={styles.brandPanel}>
             <div className={styles.logo}>
               <FaHeart /> Lost & Found
             </div>
-            <h1>Welcome Back</h1>
-            <p>Sign in to continue your journey of reuniting lost items with their owners</p>
-            <ul className={styles.features}>
-              <li>✓ Track lost items in real-time</li>
-              <li>✓ Connect with finders instantly</li>
-              <li>✓ Secure and verified platform</li>
+            <h1>Welcome back to the community.</h1>
+            <p>Sign in to continue your journey of reuniting lost items with their rightful owners.</p>
+            
+            <ul className={styles.featureList}>
+              <li className={styles.featureItem}>
+                <div className={styles.featureIcon}><FaCheckCircle /></div>
+                <span>Track real-time item updates</span>
+              </li>
+              <li className={styles.featureItem}>
+                <div className={styles.featureIcon}><FaUsers /></div>
+                <span>Connect with 10k+ local finders</span>
+              </li>
+              <li className={styles.featureItem}>
+                <div className={styles.featureIcon}><FaShieldAlt /></div>
+                <span>Secure and verified platform</span>
+              </li>
             </ul>
+
             <div className={styles.demoNote}>
               <strong>Demo Credentials:</strong>
               <p>Email: demo@example.com</p>
@@ -65,21 +78,23 @@ const LoginPage = () => {
             </div>
           </div>
 
-          <div className={styles.formSection}>
+          {/* Form Panel */}
+          <div className={styles.formPanel}>
             <h2>Sign In</h2>
-            <p>Enter your credentials to access your account</p>
+            <p className={styles.subtitle}>Enter your details below to access your account</p>
 
-            {error && <div className={styles.error}>{error}</div>}
-            {success && <div className={styles.success}>{success}</div>}
+            {error && <div className={styles.errorMsg}>{error}</div>}
+            {success && <div className={styles.successMsg}>{success}</div>}
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className={styles.form}>
               <div className={styles.formGroup}>
-                <label>Email Address</label>
+                <label className={styles.label}>Email Address</label>
                 <div className={styles.inputWrapper}>
-                  <FaEnvelope className={styles.icon} />
+                  <FaEnvelope className={styles.inputIcon} />
                   <input
                     type="email"
-                    placeholder="Enter your email"
+                    className={styles.input}
+                    placeholder="name@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -88,12 +103,13 @@ const LoginPage = () => {
               </div>
 
               <div className={styles.formGroup}>
-                <label>Password</label>
+                <label className={styles.label}>Password</label>
                 <div className={styles.inputWrapper}>
-                  <FaLock className={styles.icon} />
+                  <FaLock className={styles.inputIcon} />
                   <input
                     type={showPassword ? 'text' : 'password'}
-                    placeholder="Enter your password"
+                    className={styles.input}
+                    placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -101,37 +117,38 @@ const LoginPage = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className={styles.togglePassword}
+                    className={styles.togglePass}
                   >
                     {showPassword ? <FaEyeSlash /> : <FaEye />}
                   </button>
                 </div>
               </div>
 
-              <div className={styles.options}>
-                <label>
+              <div className={styles.optionsRow}>
+                <label className={styles.rememberMe}>
                   <input type="checkbox" /> Remember me
                 </label>
-                <a href="#forgot">Forgot Password?</a>
+                <Link to="#forgot" className={styles.forgotLink}>Forgot Password?</Link>
               </div>
 
               <button type="submit" className={styles.submitBtn} disabled={loading}>
                 {loading ? (
                   <>
-                    <FaSpinner style={{ animation: 'spin 1s linear infinite' }} /> Signing in...
+                    <FaSpinner className="spin" /> Signing in...
                   </>
                 ) : (
-                  'Sign In'
+                  'Sign In to Account'
                 )}
               </button>
             </form>
 
             <div className={styles.footer}>
-              <p>Don't have an account? <Link to="/register">Sign up now</Link></p>
+              <p>Don't have an account? <Link to="/register">Create one now</Link></p>
             </div>
           </div>
         </div>
-      </div>
+      </main>
+
       <Footer />
     </div>
   )

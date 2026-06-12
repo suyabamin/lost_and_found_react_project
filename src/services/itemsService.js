@@ -10,6 +10,7 @@ const itemsService = {
   toggleFavorite: (data) => apiClient.post('/favorites/toggle', data),
   getFavorites: () => apiClient.get('/favorites'),
   submitClaim: (data) => apiClient.post('/claims', data),
+  identifyOwnership: (data) => apiClient.post('/claims', data),
   submitReport: (id, data) => apiClient.post(`/items/${id}/reports`, data),
   
   // Admin methods

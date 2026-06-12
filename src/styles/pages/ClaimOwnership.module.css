@@ -1,32 +1,20 @@
-:root {
-  --primary: #00cfe8;
-  --primary-dark: #0097b2;
-  --secondary: #008b8b;
-  --lost: #ff5c5c;
-  --found: #00b894;
-  --bg-light: #f0f9fa;
-  --card-bg: #ffffff;
-  --text-dark: #1a2a3a;
-  --text-muted: #64748b;
-  --border-light: #e2e8f0;
-  --success: #10b981;
-  --warning: #f59e0b;
-  --danger: #ef4444;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-  --shadow-lg: 0 10px 30px rgba(0,0,0,0.12);
-  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
+/* NOTE: Local :root vars removed — all from globals.css */
 
 .claimPage {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f0f9fa 0%, #dcebeb 100%);
+  background: var(--bg-card);
+  animation: fadeIn 0.4s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .content {
   flex: 1;
-  padding: 32px 40px;
-  max-width: 1000px;
+  padding: 48px;
+  max-width: 1020px;
   margin: 0 auto;
 }
 
@@ -34,71 +22,71 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 32px;
+  margin-bottom: 40px;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 24px;
 }
 
 .eyebrow {
   color: var(--primary);
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  font-size: 12px;
-  margin-bottom: 8px;
+  letter-spacing: 0.08em;
+  font-size: 0.8rem;
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .topline h1 {
-  font-size: 32px;
+  font-size: 2.25rem;
   font-weight: 800;
-  margin-bottom: 8px;
-  background: linear-gradient(135deg, var(--text-dark), var(--secondary));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  margin-bottom: 10px;
+  color: var(--text-heading);
+  letter-spacing: -0.02em;
 }
 
 .subtitle {
-  color: var(--text-muted);
-  font-size: 14px;
+  color: var(--text-body);
+  font-size: 1rem;
 }
 
 .headerActions {
   display: flex;
-  gap: 12px;
+  gap: 14px;
 }
 
 .btnOutline {
-  background: white;
-  border: 1px solid var(--border-light);
-  color: var(--text-dark);
-  padding: 10px 20px;
-  border-radius: 40px;
+  background: var(--bg-main);
+  border: 1px solid var(--border-color);
+  color: var(--text-heading);
+  padding: 12px 24px;
+  border-radius: 99px;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 700;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   transition: var(--transition);
+  font-size: 0.9rem;
 }
 
 .btnOutline:hover {
   border-color: var(--primary);
   color: var(--primary);
+  background: var(--primary-light);
   transform: translateY(-2px);
 }
 
 .itemSummary {
-  background: white;
-  border-radius: 24px;
-  padding: 24px;
-  margin-bottom: 32px;
+  background: var(--bg-main);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  margin-bottom: 40px;
   display: flex;
-  gap: 24px;
-  border: 1px solid var(--border-light);
+  gap: 32px;
+  border: 1px solid var(--border-color);
   box-shadow: var(--shadow-sm);
 }
 
@@ -107,22 +95,24 @@
 }
 
 .summaryThumb {
-  width: 120px;
-  height: 120px;
-  border-radius: 20px;
+  width: 130px;
+  height: 130px;
+  border-radius: var(--radius-lg);
   object-fit: cover;
+  border: 1px solid var(--border-color);
 }
 
 .imagePlaceholder {
-  width: 120px;
-  height: 120px;
-  background: linear-gradient(135deg, #f5e6d3, #f0dbb4);
-  border-radius: 20px;
+  width: 130px;
+  height: 130px;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 40px;
-  color: var(--text-muted);
+  font-size: 48px;
+  color: var(--text-body);
+  border: 1px solid var(--border-color);
 }
 
 .itemDetails {
@@ -131,20 +121,30 @@
 
 .itemBadge {
   display: inline-block;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 700;
+  padding: 6px 16px;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 800;
   text-transform: uppercase;
-  margin-bottom: 10px;
+  letter-spacing: 0.05em;
+  margin-bottom: 14px;
 }
 
-.itemBadge.found { background: #d6f5ee; color: var(--found); }
-.itemBadge.lost { background: #fee2e2; color: var(--lost); }
+.itemBadge.found {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+.itemBadge.lost {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
 
 .itemDetails h2 {
-  font-size: 24px;
-  margin-bottom: 12px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 16px;
+  color: var(--text-heading);
+  letter-spacing: -0.01em;
 }
 
 .itemMeta {
@@ -152,51 +152,63 @@
   flex-wrap: wrap;
   gap: 20px;
   margin-bottom: 16px;
-  font-size: 13px;
-  color: var(--text-muted);
+  font-size: 0.9rem;
+  color: var(--text-body);
 }
 
 .itemMeta span {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  font-weight: 600;
 }
 
 .card {
-  background: white;
-  border-radius: 24px;
-  padding: 28px;
+  background: var(--bg-main);
+  border-radius: var(--radius-xl);
+  padding: 36px;
   margin-bottom: 32px;
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
 }
 
 .cardHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border-light);
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.cardHeader h3 {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .requiredBadge {
-  font-size: 12px;
-  color: var(--text-muted);
-  background: #f1f5f9;
-  padding: 4px 12px;
-  border-radius: 20px;
+  font-size: 0.8rem;
+  color: var(--text-body);
+  background: var(--bg-card);
+  padding: 5px 14px;
+  border-radius: 99px;
+  font-weight: 600;
+  border: 1px solid var(--border-color);
 }
 
 .formGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
+  gap: 28px;
 }
 
 .formField {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .formField.full {
@@ -204,49 +216,57 @@
 }
 
 .formField label {
-  font-weight: 600;
-  font-size: 14px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--text-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
-.required { color: var(--danger); }
+.required { color: #ef4444; }
 
 .formField input,
 .formField textarea {
   padding: 14px 16px;
-  border-radius: 12px;
-  border: 2px solid var(--border-light);
-  font-size: 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  font-size: 0.95rem;
+  background: var(--bg-input);
+  color: var(--text-heading);
+  font-family: inherit;
+  outline: none;
   transition: var(--transition);
 }
 
 .formField input:focus,
 .formField textarea:focus {
-  outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(0,207,232,0.1);
+  background: var(--bg-main);
+  box-shadow: 0 0 0 4px var(--primary-light);
 }
 
 .fileUploadArea {
-  border: 2px dashed var(--border-light);
-  border-radius: 12px;
-  padding: 24px;
+  border: 2px dashed var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 32px;
   text-align: center;
   cursor: pointer;
   transition: var(--transition);
+  background: var(--bg-card);
 }
 
 .fileUploadArea:hover {
   border-color: var(--primary);
-  background: rgba(0, 207, 232, 0.05);
+  background: var(--primary-light);
 }
 
 .filePreview {
   max-width: 100%;
-  max-height: 200px;
-  border-radius: 12px;
+  max-height: 220px;
+  border-radius: var(--radius-md);
 }
 
 .checkboxField {
@@ -257,72 +277,117 @@
 .checkboxLabel {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-body);
 }
 
 .cardActions {
   display: flex;
   gap: 16px;
+  margin-top: 8px;
 }
 
 .btnPrimary {
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  background: var(--primary);
   color: white;
   border: none;
-  padding: 14px 28px;
-  border-radius: 40px;
+  padding: 14px 32px;
+  border-radius: 99px;
   font-weight: 700;
+  font-size: 0.95rem;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  transition: var(--transition);
+}
+
+.btnPrimary:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .btnSecondary {
-  background: #f1f5f9;
-  border: none;
-  padding: 14px 28px;
-  border-radius: 40px;
-  font-weight: 600;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-body);
+  padding: 14px 32px;
+  border-radius: 99px;
+  font-weight: 700;
+  font-size: 0.95rem;
   cursor: pointer;
+  transition: var(--transition);
+}
+
+.btnSecondary:hover {
+  background: var(--bg-input);
+  color: var(--text-heading);
+  transform: translateY(-2px);
 }
 
 .processSteps {
-  background: white;
-  border-radius: 24px;
-  padding: 28px;
-  border: 1px solid var(--border-light);
+  background: var(--bg-main);
+  border-radius: var(--radius-xl);
+  padding: 36px;
+  border: 1px solid var(--border-color);
+}
+
+.processSteps h3 {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 28px;
 }
 
 .stepsGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  margin-top: 20px;
+  gap: 24px;
 }
 
 .step {
   display: flex;
-  gap: 12px;
+  gap: 14px;
 }
 
 .stepNumber {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   background: var(--primary);
   color: white;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
+  font-weight: 800;
   flex-shrink: 0;
+  font-size: 0.95rem;
+}
+
+.step p {
+  color: var(--text-body);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.step strong {
+  display: block;
+  color: var(--text-heading);
+  font-weight: 700;
+  margin-bottom: 4px;
 }
 
 @media (max-width: 768px) {
+  .content { padding: 24px 16px; }
   .formGrid { grid-template-columns: 1fr; }
   .formField.full { grid-column: span 1; }
-  .stepsGrid { grid-template-columns: 1fr; }
+  .stepsGrid { grid-template-columns: 1fr 1fr; }
   .cardActions { flex-direction: column; }
+  .itemSummary { flex-direction: column; }
 }

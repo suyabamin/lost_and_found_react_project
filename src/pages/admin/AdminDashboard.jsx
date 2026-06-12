@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import AdminLayout from './AdminLayout'
-import apiClient from '../../services/api'
+import adminService from '../../services/adminService'
 import { 
     FaUsers, FaUserCheck, FaBoxOpen, FaHandHoldingHeart, 
     FaCheckCircle, FaClipboardList, FaComments, FaExclamationTriangle, 
@@ -16,7 +16,7 @@ const AdminDashboard = () => {
         const fetchStats = async () => {
             setLoading(true)
             try {
-                const response = await apiClient.get('/admin/dashboard')
+                const response = await adminService.getDashboardStats()
                 setStats(response.data)
             } catch (err) {
                 console.error('Failed to fetch dashboard stats:', err)
@@ -33,12 +33,12 @@ const AdminDashboard = () => {
     if (error) return <AdminLayout title="Dashboard"><div style={{ padding: '40px', color: '#ef4444' }}>⚠️ {error}</div></AdminLayout>
 
     const statItems = [
-        { title: 'Total Users', value: stats?.totalUsers || 0, icon: <FaUsers />, color: '#0ea5e9', bg: '#e0f2fe' },
+        { title: 'Total Users', value: stats?.totalUsers || 0, icon: <FaUsers />, color: 'var(--primary)', bg: 'var(--primary-light)' },
         { title: 'Active Users', value: stats?.activeUsers || 0, icon: <FaUserCheck />, color: '#10b981', bg: '#dcfce7' },
         { title: 'Total Lost Posts', value: stats?.totalLostPosts || 0, icon: <FaBoxOpen />, color: '#f59e0b', bg: '#fef3c7' },
         { title: 'Total Found Posts', value: stats?.totalFoundPosts || 0, icon: <FaHandHoldingHeart />, color: '#8b5cf6', bg: '#ede9fe' },
         { title: 'Recovered Items', value: stats?.recoveredItems || 0, icon: <FaCheckCircle />, color: '#10b981', bg: '#dcfce7' },
-        { title: 'Claims', value: stats?.claims || 0, icon: <FaClipboardList />, color: '#6366f1', bg: '#e0e7ff' },
+        { title: 'Claims', value: stats?.claims || 0, icon: <FaClipboardList />, color: 'var(--primary)', bg: 'var(--primary-light)' },
         { title: 'Messages', value: stats?.messages || 0, icon: <FaComments />, color: '#ec4899', bg: '#fce7f3' },
         { title: 'Reports', value: stats?.reports || 0, icon: <FaExclamationTriangle />, color: '#ef4444', bg: '#fee2e2' },
         { title: 'Ratings', value: stats?.ratings || 0, icon: <FaStar />, color: '#fbbf24', bg: '#fef3c7' },

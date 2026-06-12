@@ -7,14 +7,14 @@ import styles from '../styles/pages/PostDetails.module.css'
 import { 
   FaChevronLeft, FaChevronRight, FaShare, FaHeart, 
   FaSpinner, FaMapMarkerAlt, FaCalendarAlt, FaEye, FaTag, 
-  FaHandshake, FaShieldAlt, FaInfoCircle, FaLocationArrow
+  FaHandshake, FaShieldAlt, FaInfoCircle, FaLocationArrow,
+  FaExternalLinkAlt, FaUserCheck, FaClock, FaBox, FaArrowLeft
 } from 'react-icons/fa'
 import itemsService from '../services/itemsService'
 import Swal from 'sweetalert2'
 import { useAuth } from '../context/AuthContext'
 import { MapContainer, TileLayer, Marker } from 'react-leaflet'
 import L from 'leaflet'
-import { FaExternalLinkAlt } from 'react-icons/fa'
 
 const redIcon = new L.Icon({
   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
@@ -34,6 +34,8 @@ const greenIcon = new L.Icon({
   shadowSize: [41, 41]
 });
 
+import BackButton from '../components/BackButton'
+
 const PostDetailsPage = () => {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -46,6 +48,7 @@ const PostDetailsPage = () => {
 
   useEffect(() => {
     fetchPostDetails()
+    window.scrollTo(0, 0)
   }, [id])
 
   const fetchPostDetails = async () => {
@@ -105,36 +108,20 @@ const PostDetailsPage = () => {
     try {
       if (navigator.share) {
         await navigator.share(shareData)
-        Swal.fire({
-          icon: 'success',
-          title: 'Shared!',
-          text: 'Shared successfully',
-          timer: 1500,
-          showConfirmButton: false
-        })
       } else {
         await navigator.clipboard.writeText(window.location.href)
         Swal.fire({
           icon: 'success',
           title: 'Link Copied!',
-          text: 'Link copied successfully',
+          text: 'The sharing link has been copied to your clipboard.',
           timer: 1500,
-          showConfirmButton: false
+          showConfirmButton: false,
+          toast: true,
+          position: 'top-end'
         })
       }
     } catch (err) {
-      if (err.name !== 'AbortError') {
-        console.error('Share error:', err)
-        // Fallback to clipboard if share was cancelled or failed
-        await navigator.clipboard.writeText(window.location.href)
-        Swal.fire({
-          icon: 'success',
-          title: 'Link Copied!',
-          text: 'Link copied to clipboard.',
-          timer: 1500,
-          showConfirmButton: false
-        })
-      }
+      if (err.name !== 'AbortError') console.error('Share error:', err)
     }
   }
 
@@ -151,31 +138,27 @@ const PostDetailsPage = () => {
       })
       return
     }
-    if (user.id === post.user_id) {
+    // Logic Patch: Defensive type-safe comparison
+    // We only block navigation to the claim form if we are 100% certain 
+    // that the current authenticated user created this post.
+    const currentUserId = user?.id?.toString();
+    const postOwnerId = post?.user_id?.toString();
+
+    if (currentUserId && postOwnerId && currentUserId === postOwnerId) {
       Swal.fire('Info', 'You cannot claim your own item.', 'info')
-      return
+      return;
     }
     navigate(`/claim/${id}`)
   }
 
   const postImages = post?.image_url ? [post.image_url] : []
   
-  const nextImage = () => {
-    if (postImages.length <= 1) return
-    setCurrentImageIndex((prev) => (prev + 1) % postImages.length)
-  }
-
-  const prevImage = () => {
-    if (postImages.length <= 1) return
-    setCurrentImageIndex((prev) => (prev - 1 + postImages.length) % postImages.length)
-  }
-
   if (loading) return (
     <div className={styles.postDetailsPage}>
       <Header />
       <div className={styles.loadingState}>
-        <FaSpinner className={styles.spin} />
-        <p>Fetching item details...</p>
+        <FaSpinner className={`${styles.spin} spin`} />
+        <p>Analyzing marketplace listing...</p>
       </div>
       <Footer />
     </div>
@@ -185,9 +168,9 @@ const PostDetailsPage = () => {
     <div className={styles.postDetailsPage}>
       <Header />
       <div className={styles.errorState}>
-        <h2>Oops! Item Not Found</h2>
-        <p>The post you are looking for might have been removed or doesn't exist.</p>
-        <Link to="/dashboard" className={styles.primaryBtn}>Return Home</Link>
+        <h2>Listing Not Found</h2>
+        <p>This item maybe has been recovered or the listing expired.</p>
+        <Link to="/dashboard" className="btn-premium btn-primary">Return to Marketplace</Link>
       </div>
       <Footer />
     </div>
@@ -199,180 +182,172 @@ const PostDetailsPage = () => {
 
       <div className={styles.topNav}>
         <div className={styles.breadcrumb}>
-          <Link to="/dashboard">Home</Link> / <Link to="/browse">Browse</Link> / {post.title || 'Details'}
+          <Link to="/dashboard">Marketplace</Link> / <span>{post.category}</span> / <span>{post.title}</span>
         </div>
-        <div className={styles.navLinks}>
-          <button onClick={() => navigate(-1)} className={styles.backBtn}>← Back</button>
-          <Link to="/profile">My Profile</Link>
-        </div>
+        <BackButton />
       </div>
 
       <div className={styles.contentWrapper}>
+        {/* Left Column: Gallery & Core Details */}
         <div className={styles.leftColumn}>
-          <div className={styles.listingHero}>
-            <div className={styles.heroInfo}>
-              <span className={`${styles.statusBadge} ${styles[post.status] || ''}`}>
-                {post.status === 'lost' ? '⚠️ Lost Item' : '✅ Found Item'}
-              </span>
-              <h1>{post.title}</h1>
-              <div className={styles.metaInfo}>
-                <div className={styles.metaItem}>
-                  <FaMapMarkerAlt /> <span>{post.location}</span>
-                </div>
-                <div className={styles.metaItem}>
-                  <FaCalendarAlt /> <span>{post.created_at ? new Date(post.created_at).toLocaleDateString() : 'Recently'}</span>
-                </div>
-                <div className={styles.metaItem}>
-                  <FaTag /> <span>{post.category}</span>
-                </div>
+          <div className={styles.gallerySection}>
+            <div className={styles.mainImageArea}>
+              <div className={styles.imageOverlay}>
+                <span className={`${styles.statusBadge} ${styles[post.status]}`}>
+                  {post.status} Item
+                </span>
               </div>
+              <img 
+                src={postImages[currentImageIndex] || 'https://via.placeholder.com/800x600?text=No+Image+Provided'} 
+                alt={post.title}
+                className={styles.mainImage}
+                onError={(e) => { e.target.src = 'https://via.placeholder.com/800x600?text=No+Image' }}
+              />
             </div>
-            <div className={styles.heroActions}>
-              <button className={styles.actionBtn} onClick={handleToggleFavorite}>
-                <FaHeart style={{ color: isFavorite ? '#DC2626' : 'inherit' }} /> 
-                {isFavorite ? 'Favorited' : 'Favorite'} ({favCount})
-              </button>
-              <button className={styles.actionBtn} onClick={handleShare}>
-                <FaShare /> Share
-              </button>
-            </div>
+            {postImages.length > 1 && (
+              <div className={styles.thumbnailsArea}>
+                {postImages.map((img, idx) => (
+                  <img 
+                    key={idx}
+                    src={img}
+                    alt="Thumbnail"
+                    className={`${styles.thumbnail} ${currentImageIndex === idx ? styles.thumbnailActive : ''}`}
+                    onClick={() => setCurrentImageIndex(idx)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
 
-          <div className={styles.carousel}>
-            <div className={styles.carouselMain}>
-              {postImages.length > 0 ? (
-                <img 
-                  src={postImages[currentImageIndex]} 
-                  alt={post.title}
-                  className={styles.carouselImage}
-                  onError={(e) => { e.target.src = 'https://via.placeholder.com/600x400?text=Image+Unavailable' }}
-                />
-              ) : (
-                <div className={styles.noImage}>
-                    <FaEye size={48} style={{opacity: 0.2}} />
-                    <p>No image provided</p>
-                </div>
-              )}
-              {postImages.length > 1 && (
-                <div className={styles.carouselControls}>
-                  <button className={styles.carouselBtn} onClick={prevImage}><FaChevronLeft /></button>
-                  <button className={styles.carouselBtn} onClick={nextImage}><FaChevronRight /></button>
-                </div>
-              )}
-            </div>
+          <div className={styles.detailsCard}>
+             <span className={styles.categoryTag}>{post.category}</span>
+             <div className={styles.titleArea}>
+               <h1>{post.title}</h1>
+             </div>
+
+             <div className={styles.quickInfo}>
+               <div className={styles.infoItem}>
+                 <span className={styles.infoLabel}>Location</span>
+                 <span className={styles.infoValue}><FaMapMarkerAlt /> {post.location}</span>
+               </div>
+               <div className={styles.infoItem}>
+                 <span className={styles.infoLabel}>Listed Date</span>
+                 <span className={styles.infoValue}><FaCalendarAlt /> {new Date(post.created_at).toLocaleDateString()}</span>
+               </div>
+               <div className={styles.infoItem}>
+                 <span className={styles.infoLabel}>Condition</span>
+                 <span className={styles.infoValue}>Reference: #{post.id}</span>
+               </div>
+             </div>
+
+             <div className={styles.descriptionArea}>
+               <h3><FaInfoCircle /> Item Description</h3>
+               <p className={styles.descriptionText}>{post.description || 'No detailed description provided for this listing.'}</p>
+             </div>
           </div>
 
-          <div className={styles.infoCard}>
-            <h3><FaInfoCircle /> Details & Description</h3>
-            <p className={styles.description}>{post.description || 'No description provided.'}</p>
-            <div className={styles.metaChips}>
-              <div className={styles.chip}><strong>ID:</strong> #{post.id}</div>
-              <div className={styles.chip}><strong>Status:</strong> {post.status}</div>
-              <div className={styles.chip}><strong>Category:</strong> {post.category}</div>
-            </div>
-          </div>
-
+          {/* Map Section */}
           {(post.latitude && post.longitude) && (
-            <div className={styles.infoCard} style={{ marginTop: '24px' }}>
-              <h3><FaMapMarkerAlt /> Exact Location</h3>
-              <div style={{ height: '300px', width: '100%', borderRadius: '12px', overflow: 'hidden', margin: '16px 0', border: '1px solid #e2e8f0' }}>
+            <div className={styles.mapCard}>
+              <div className={styles.mapHeader}>
+                <h4><FaMapMarkerAlt /> Recovery Location</h4>
+                <button 
+                  className={styles.utilityBtn}
+                  onClick={() => window.open(`https://www.google.com/maps?q=${post.latitude},${post.longitude}`, '_blank')}
+                >
+                  <FaExternalLinkAlt /> Open Maps
+                </button>
+              </div>
+              <div className={styles.mapArea}>
                 <MapContainer 
                   center={[parseFloat(post.latitude), parseFloat(post.longitude)]} 
                   zoom={15} 
                   scrollWheelZoom={false}
                   style={{ height: '100%', width: '100%' }}
                 >
-                  <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  />
+                  <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                   <Marker 
                     position={[parseFloat(post.latitude), parseFloat(post.longitude)]} 
                     icon={post.status === 'lost' ? redIcon : greenIcon}
                   />
                 </MapContainer>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <p style={{ margin: 0, fontWeight: '600', fontSize: '14px' }}>{post.location}</p>
-                  <p style={{ margin: 0, color: '#64748b', fontSize: '12px' }}>Coordinates: {post.latitude}, {post.longitude}</p>
-                </div>
-                <button 
-                  className={styles.actionBtn}
-                  onClick={() => window.open(`https://www.google.com/maps?q=${post.latitude},${post.longitude}`, '_blank')}
-                >
-                  <FaExternalLinkAlt /> Open in Google Maps
-                </button>
-              </div>
             </div>
           )}
         </div>
 
+        {/* Right Column: Actions & Poster */}
         <div className={styles.rightColumn}>
-          <div className={`${styles.stickyAction} ${styles.actionCard}`}>
-            <h3>📞 Connect with Owner</h3>
-            <div className={styles.actionButtons}>
-              <MessageOwnerButton 
-                itemId={post.id} 
-                ownerId={post.user_id} 
-                className={styles.primaryBtn} 
+          {/* Main Action Component */}
+          <div className={styles.actionsCard}>
+             <div className={styles.posterActions}>
+                {post.active_tracking_id ? (
+                  <button 
+                    className="btn-premium btn-primary"
+                    style={{ width: '100%', height: '56px', background: '#10b981' }}
+                    onClick={() => navigate(`/tracking/${post.active_tracking_id}`)}
+                  >
+                    <FaLocationArrow /> Track Return Live
+                  </button>
+                ) : (
+                  <button className="btn-premium btn-primary" style={{ width: '100%', height: '56px' }} onClick={handleClaim}>
+                    {post.status === 'found' ? 'Claim Possession' : 'Identify Ownership'}
+                  </button>
+                )}
+             </div>
+             
+             <div className={styles.secondaryActions}>
+                <button className={styles.utilityBtn} onClick={handleToggleFavorite}>
+                   <FaHeart style={{ color: isFavorite ? '#EF4444' : 'inherit' }} />
+                   {isFavorite ? 'Saved' : 'Save'}
+                </button>
+                <button className={styles.utilityBtn} onClick={handleShare}>
+                   <FaShare /> Share
+                </button>
+             </div>
+          </div>
+
+          {/* Compact Poster Card */}
+          <div className={styles.posterCard}>
+            <div className={styles.posterHeader}>
+              <img 
+                src={post.owner_avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(post.owner_name || 'U')}&background=00A9B5&color=fff&size=80`} 
+                alt="Poster"
+                className={styles.posterAvatar}
               />
-              {post.active_tracking_id ? (
-                <button 
-                  className={styles.trackingBtn} 
-                  style={{ 
-                    backgroundColor: '#10b981', 
-                    color: 'white', 
-                    width: '100%', 
-                    padding: '12px', 
-                    borderRadius: '12px', 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center', 
-                    gap: '8px', 
-                    marginTop: '10px',
-                    border: 'none',
-                    fontWeight: '600',
-                    cursor: 'pointer'
-                  }}
-                  onClick={() => navigate(`/tracking/${post.active_tracking_id}`)}
-                >
-                  <FaLocationArrow /> Live Location Tracking
-                </button>
-              ) : (
-                <button className={styles.secondaryBtn} onClick={handleClaim}>
-                  <FaHandshake /> Claim Ownership
-                </button>
+              <div className={styles.posterMeta}>
+                <h4>{post.owner_name}</h4>
+                <p>Member since {post.owner_join_date ? new Date(post.owner_join_date).getFullYear() : '2024'}</p>
+              </div>
+            </div>
+            
+            <div className={styles.posterActions}>
+              {String(user?.id) !== String(post?.user_id) && (
+                <div className={styles.connectBtn}>
+                   <MessageOwnerButton 
+                      itemId={post.id} 
+                      ownerId={post?.user_id} 
+                      className="btn-premium btn-primary" 
+                   />
+                </div>
               )}
+              <button 
+                className={styles.viewProfile}
+                onClick={() => navigate(`/profile/${post.user_id}`)}
+              >
+                View Seller Profile
+              </button>
             </div>
           </div>
 
-          <div className={styles.ownerCard}>
-            <h3>👤 Posted By</h3>
-            <div className={styles.ownerInfo}>
-              <img 
-                src={post.owner_avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(post.owner_name || 'U')}&background=14B8A6&color=fff`} 
-                alt="Owner"
-                className={styles.ownerAvatar}
-                onError={(e) => { e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(post.owner_name || 'U')}&background=14B8A6&color=fff` }}
-              />
-              <div className={styles.ownerMeta}>
-                <h4>{post.owner_name || 'Anonymous User'}</h4>
-                <p>Member since {post.owner_join_date ? new Date(post.owner_join_date).getFullYear() : '2026'}</p>
-              </div>
-            </div>
-            <div className={styles.ownerStatsMini}>
-               <span>Posts: {post.owner_posts_count || 0}</span>
-               <span>Claims: {post.owner_claims_count || 0}</span>
-            </div>
-            <button className={styles.viewProfileBtn} onClick={() => navigate(`/profile/${post.user_id}`)}>
-              View Profile
-            </button>
-          </div>
-          
-          <div className={styles.safetyCard}>
-            <h4><FaShieldAlt /> Safety First</h4>
-            <p>Always meet in public places, bring a friend, and never share sensitive personal information.</p>
+          {/* Trust & Safety */}
+          <div className={`${styles.detailsCard} ${styles.safetyArea}`} style={{ padding: '24px', background: 'var(--bg-card-alt)' }}>
+            <h4 style={{ fontSize: '0.9rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px', color: '#10B981' }}>
+              <FaShieldAlt /> Transaction Safety
+            </h4>
+            <p style={{ fontSize: '0.85rem', margin: 0, color: 'var(--text-body)' }}>
+              Avoid upfront payments. Inspect items in person in public safe-zones before completing a return.
+            </p>
           </div>
         </div>
       </div>

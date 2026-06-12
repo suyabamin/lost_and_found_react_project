@@ -32,7 +32,7 @@
 .orb:nth-child(1) {
   width: 400px;
   height: 400px;
-  background: #00cfe8;
+  background: var(--primary);
   top: -50px;
   left: -50px;
   animation: float 6s ease-in-out infinite;
@@ -41,7 +41,7 @@
 .orb:nth-child(2) {
   width: 300px;
   height: 300px;
-  background: #ff6b6b;
+  background: var(--accent);
   bottom: 100px;
   right: -50px;
   animation: float 8s ease-in-out infinite reverse;
@@ -50,7 +50,7 @@
 .orb:nth-child(3) {
   width: 200px;
   height: 200px;
-  background: #00b894;
+  background: var(--primary);
   top: 50%;
   right: 10%;
   animation: float 10s ease-in-out infinite;
@@ -62,7 +62,7 @@
 }
 
 .heroContent {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -77,40 +77,41 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  background: rgba(0, 207, 232, 0.1);
+  background: var(--primary-light);
   border-radius: 50px;
-  color: #00cfe8;
-  font-weight: 600;
+  color: var(--primary);
+  font-weight: 700;
   margin-bottom: 1.5rem;
   width: fit-content;
 }
 
 .title {
-  font-size: 3.5rem;
-  font-weight: 800;
-  line-height: 1.2;
-  color: #2c3e50;
+  font-size: 4rem;
+  font-weight: 900;
+  line-height: 1.1;
+  color: var(--text-heading);
   margin-bottom: 1.5rem;
+  letter-spacing: -0.04em;
 }
 
 .gradient {
-  background: linear-gradient(135deg, #00cfe8 0%, #00b894 100%);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .description {
-  font-size: 1.1rem;
-  color: #7f8c8d;
-  margin-bottom: 2rem;
-  line-height: 1.8;
+  font-size: 1.25rem;
+  color: var(--text-body);
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
 }
 
 .stats {
   display: flex;
-  gap: 2rem;
-  margin: 2rem 0;
+  gap: 32px;
+  margin: 32px 0;
   flex-wrap: wrap;
 }
 
@@ -120,47 +121,50 @@
 }
 
 .statNumber {
-  font-size: 1.75rem;
-  font-weight: 800;
-  color: #00cfe8;
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--primary);
+  letter-spacing: -0.02em;
 }
 
 .statLabel {
-  font-size: 0.85rem;
-  color: #7f8c8d;
-  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--text-body);
+  font-weight: 600;
 }
 
 .heroButtons {
   display: flex;
-  gap: 1rem;
+  gap: 16px;
   flex-wrap: wrap;
 }
 
 .btnPrimary,
 .btnSecondary,
 .btnOutline {
-  padding: 1rem 2rem;
-  border-radius: 12px;
+  padding: 14px 32px;
+  border-radius: var(--radius-md);
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 800;
   border: none;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
-  transition: all 0.3s ease;
+  gap: 12px;
+  transition: var(--transition);
   text-decoration: none;
 }
 
 .btnPrimary {
-  background: linear-gradient(135deg, #00cfe8 0%, #00a8c4 100%);
+  background: var(--primary);
   color: white;
+  box-shadow: 0 4px 12px rgba(0, 169, 181, 0.2);
 }
 
 .btnPrimary:hover {
   transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(0, 207, 232, 0.3);
+  background: var(--primary-hover);
+  box-shadow: 0 10px 25px rgba(0, 169, 181, 0.3);
 }
 
 .btnSecondary {
@@ -243,8 +247,8 @@
 
 /* Features Section */
 .features {
-  padding: 4rem 1rem;
-  background: #f8f9fa;
+  padding: 100px 1rem;
+  background: #f8fafc;
 }
 
 .container {
@@ -254,29 +258,35 @@
 
 .sectionHeader {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 60px;
 }
 
 .sectionBadge {
   display: inline-block;
-  padding: 0.75rem 1.5rem;
-  background: rgba(0, 207, 232, 0.1);
+  padding: 8px 16px;
+  background: var(--primary-light);
   border-radius: 50px;
-  color: #00cfe8;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  font-size: 0.85rem;
+  color: var(--primary);
+  font-weight: 800;
+  margin-bottom: 20px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 .sectionHeader h2 {
-  font-size: 2.5rem;
-  color: #2c3e50;
-  margin-bottom: 0.75rem;
+  font-size: 3rem;
+  color: var(--text-heading);
+  margin-bottom: 16px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
 }
 
 .sectionHeader p {
-  color: #7f8c8d;
-  font-size: 1.1rem;
+  color: var(--text-body);
+  font-size: 1.25rem;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 .featureGrid {
@@ -287,28 +297,31 @@
 
 .featureCard {
   background: white;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  padding: 48px 32px;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
   text-align: center;
 }
 
 .featureCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(-10px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary);
 }
 
 .featureIcon {
-  font-size: 2.5rem;
-  color: #00cfe8;
-  margin-bottom: 1rem;
+  font-size: 3rem;
+  color: var(--primary);
+  margin-bottom: 24px;
 }
 
 .featureCard h3 {
-  font-size: 1.25rem;
-  margin-bottom: 0.75rem;
-  color: #2c3e50;
+  font-size: 1.5rem;
+  margin-bottom: 12px;
+  color: var(--text-heading);
+  font-weight: 800;
 }
 
 .featureCard p {
@@ -318,7 +331,7 @@
 
 /* How It Works */
 .howItWorks {
-  padding: 4rem 1rem;
+  padding: 100px 1rem;
   background: white;
 }
 
@@ -344,19 +357,21 @@
 
 .stepNumber {
   position: absolute;
-  top: -15px;
+  top: -20px;
   left: 50%;
   transform: translateX(-50%);
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #00cfe8 0%, #00a8c4 100%);
+  width: 48px;
+  height: 48px;
+  background: var(--primary);
   color: white;
   border-radius: 50%;
+  border: 4px solid white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 1.25rem;
+  box-shadow: var(--shadow-sm);
 }
 
 .stepIcon {

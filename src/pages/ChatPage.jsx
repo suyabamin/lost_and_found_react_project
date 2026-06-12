@@ -11,6 +11,8 @@ import {
   FaBoxOpen, FaMapMarkerAlt, FaCalendarAlt
 } from 'react-icons/fa'
 
+import BackButton from '../components/BackButton'
+
 const ChatPage = () => {
     const { id: conversationId } = useParams()
     const navigate = useNavigate()
@@ -145,13 +147,13 @@ const ChatPage = () => {
     return (
         <div className={styles.chatPage}>
             <Header />
+            <div className={styles.backButtonContainer}>
+                <BackButton />
+            </div>
             <main className={styles.mainContent}>
                 {/* Left Panel: Conversation List */}
                 <div className={styles.leftPanel}>
                     <div className={styles.panelHeader}>
-                        <button className={styles.backBtn} onClick={() => navigate('/chat')}>
-                            <FaArrowLeft />
-                        </button>
                         <h2>Messages</h2>
                     </div>
 
@@ -229,30 +231,42 @@ const ChatPage = () => {
                                             <p>No messages yet. Say hi to start the conversation!</p>
                                         </div>
                                     ) : (
-                                        messages.map(msg => (
-                                            <div
-                                                key={msg.id}
-                                                className={`${styles.messageWrapper} ${msg.sender_id == user.id ? styles.sentMessage : styles.receivedMessage}`}
-                                            >
-                                                <div className={styles.messageBubble}>
-                                                    {msg.body && <p>{msg.body}</p>}
-                                                    {msg.attachment_url && (
-                                                        <div className={styles.messageAttachment}>
-                                                            {msg.attachment_url.match(/\.(jpg|jpeg|png|gif|webp)/i) || msg.attachment_url.includes('cloudinary') ? (
-                                                                <img src={msg.attachment_url} alt="Attachment" onClick={() => window.open(msg.attachment_url)} />
-                                                            ) : (
-                                                                <a href={msg.attachment_url} target="_blank" rel="noopener noreferrer">
-                                                                    <FaPaperclip /> View Attachment
-                                                                </a>
-                                                            )}
-                                                        </div>
+                                        messages.map(msg => {
+                                            const isMine = msg.sender_id == user.id;
+                                            return (
+                                                <div
+                                                    key={msg.id}
+                                                    className={`${styles.messageWrapper} ${isMine ? styles.sentMessage : styles.receivedMessage}`}
+                                                >
+                                                    {!isMine && (
+                                                        <img 
+                                                            src={selectedConversation?.other_user_avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedConversation?.other_user_name || 'U')}&background=00A9B5&color=fff`} 
+                                                            alt="" 
+                                                            className={styles.msgAvatar}
+                                                        />
                                                     )}
-                                                    <span className={styles.messageTime}>
-                                                        {msg.created_at ? new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
-                                                    </span>
+                                                    <div className={styles.messageBubble}>
+                                                        {msg.body && <p>{msg.body}</p>}
+                                                        {msg.attachment_url && (
+                                                            <div className={styles.messageAttachment}>
+                                                                {msg.attachment_url.match(/\.(jpg|jpeg|png|gif|webp)/i) || msg.attachment_url.includes('cloudinary') ? (
+                                                                    <img src={msg.attachment_url} alt="Attachment" onClick={() => window.open(msg.attachment_url)} />
+                                                                ) : (
+                                                                    <a href={msg.attachment_url} target="_blank" rel="noopener noreferrer">
+                                                                        <FaPaperclip /> View Attachment
+                                                                    </a>
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                        <div className={styles.messageTime}>
+                                                            {isMine && <span style={{ marginRight: '4px' }}>You • </span>}
+                                                            {msg.created_at ? new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                                                            {isMine && <FaCheckCircle style={{ marginLeft: '6px', fontSize: '10px' }} />}
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        ))
+                                            );
+                                        })
                                     )}
                                     <div ref={messagesEndRef} />
                                 </div>

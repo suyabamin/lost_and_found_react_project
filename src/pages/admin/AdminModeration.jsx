@@ -39,7 +39,7 @@ const AdminModeration = () => {
             <div style={{ display: 'grid', gap: '2rem' }}>
                 <section className="admin-card">
                     <h3 style={{ marginTop: 0 }}>Pending Claims Verification</h3>
-                    <div className="admin-table-wrapper" style={{ boxShadow: 'none', marginTop: '1rem', border: '1px solid #f1f5f9' }}>
+                    <div className="admin-table-wrapper" style={{ boxShadow: 'none', marginTop: '1rem', border: '1px solid var(--border-color)' }}>
                         <table className="admin-table">
                             <thead>
                                 <tr>
@@ -51,17 +51,17 @@ const AdminModeration = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {data?.pendingClaims.length === 0 && <tr><td colSpan="5" style={{ textAlign: 'center' }}>No pending claims.</td></tr>}
+                                {data?.pendingClaims.length === 0 && <tr><td colSpan="5" style={{ textAlign: 'center', padding: '32px', color: 'var(--text-body)' }}>No pending claims.</td></tr>}
                                 {data?.pendingClaims.map(claim => (
                                     <tr key={claim.id}>
-                                        <td style={{ fontWeight: 600 }}>{claim.item_title}</td>
+                                        <td style={{ fontWeight: 800, color: 'var(--text-heading)' }}>{claim.item_title}</td>
                                         <td>{claim.claimant_name}</td>
-                                        <td><button onClick={() => Swal.fire('Proof Details', claim.description, 'info')} className="btn-action" style={{ background: '#eef2ff', color: '#4f46e5' }}>View Details</button></td>
+                                        <td><button onClick={() => Swal.fire('Proof Details', claim.description, 'info')} className="btn-action" style={{ background: 'var(--primary-light)', color: 'var(--primary)' }}>View Details</button></td>
                                         <td>{new Date(claim.created_at).toLocaleDateString()}</td>
                                         <td>
-                                            <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                                <button className="btn-action btn-unban" style={{ padding: '0.25rem 0.75rem' }}>Approve</button>
-                                                <button className="btn-action btn-ban" style={{ padding: '0.25rem 0.75rem' }}>Reject</button>
+                                            <div style={{ display: 'flex', gap: '8px' }}>
+                                                <button className="btn-action btn-unban" style={{ padding: '8px 16px' }}>Approve</button>
+                                                <button className="btn-action btn-ban" style={{ padding: '8px 16px' }}>Reject</button>
                                             </div>
                                         </td>
                                     </tr>
@@ -74,7 +74,7 @@ const AdminModeration = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
                     <section className="admin-card">
                         <h3 style={{ marginTop: 0 }}>Reported Users</h3>
-                        <div className="admin-table-wrapper" style={{ boxShadow: 'none', border: '1px solid #f1f5f9' }}>
+                        <div className="admin-table-wrapper" style={{ boxShadow: 'none', border: '1px solid var(--border-color)' }}>
                             <table className="admin-table">
                                 <thead>
                                     <tr>
@@ -85,14 +85,14 @@ const AdminModeration = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {data?.reportedUsers.length === 0 && <tr><td colSpan="4" style={{ textAlign: 'center' }}>No reports.</td></tr>}
+                                    {data?.reportedUsers.length === 0 && <tr><td colSpan="4" style={{ textAlign: 'center', padding: '32px', color: 'var(--text-body)' }}>No reports.</td></tr>}
                                     {data?.reportedUsers.map(r => (
                                         <tr key={r.id}>
-                                            <td style={{ fontWeight: 600 }}>{r.reported_name}</td>
+                                            <td style={{ fontWeight: 800, color: 'var(--text-heading)' }}>{r.reported_name}</td>
                                             <td>{r.reporter_name}</td>
                                             <td>{r.reason}</td>
                                             <td>
-                                                <button className="btn-action btn-ban" style={{ padding: '0.25rem 0.5rem' }}>Review</button>
+                                                <button className="btn-action btn-ban" style={{ padding: '8px 16px' }}>Review</button>
                                             </td>
                                         </tr>
                                     ))}
@@ -103,7 +103,7 @@ const AdminModeration = () => {
 
                     <section className="admin-card">
                         <h3 style={{ marginTop: 0 }}>Reported Posts</h3>
-                        <div className="admin-table-wrapper" style={{ boxShadow: 'none', border: '1px solid #f1f5f9' }}>
+                        <div className="admin-table-wrapper" style={{ boxShadow: 'none', border: '1px solid var(--border-color)' }}>
                             <table className="admin-table">
                                 <thead>
                                     <tr>
@@ -113,15 +113,15 @@ const AdminModeration = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {data?.reportedPosts.length === 0 && <tr><td colSpan="3" style={{ textAlign: 'center' }}>No reports.</td></tr>}
+                                    {data?.reportedPosts.length === 0 && <tr><td colSpan="3" style={{ textAlign: 'center', padding: '32px', color: 'var(--text-body)' }}>No reports.</td></tr>}
                                     {data?.reportedPosts.map(r => (
                                         <tr key={r.id}>
-                                            <td style={{ fontWeight: 600 }}>{r.item_title}</td>
+                                            <td style={{ fontWeight: 800, color: 'var(--text-heading)' }}>{r.item_title}</td>
                                             <td>{r.reporter_name}</td>
                                             <td>
-                                                <div style={{ display: 'flex', gap: '0.25rem' }}>
-                                                    <button onClick={() => handlePostAction(r.reported_id, 'hide')} className="btn-action" style={{ background: '#fef3c7', color: '#92400e', padding: '0.25rem 0.5rem' }}>Hide</button>
-                                                    <button onClick={() => handlePostAction(r.reported_id, 'delete')} className="btn-action btn-ban" style={{ padding: '0.25rem 0.5rem' }}>Delete</button>
+                                                <div style={{ display: 'flex', gap: '8px' }}>
+                                                    <button onClick={() => handlePostAction(r.reported_id, 'hide')} className="btn-action" style={{ background: '#fef3c7', color: '#92400e', padding: '8px 16px' }}>Hide</button>
+                                                    <button onClick={() => handlePostAction(r.reported_id, 'delete')} className="btn-action btn-ban" style={{ padding: '8px 16px' }}>Delete</button>
                                                 </div>
                                             </td>
                                         </tr>

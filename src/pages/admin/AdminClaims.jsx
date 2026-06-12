@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import AdminLayout from './AdminLayout'
-import apiClient from '../../services/api'
+import adminService from '../../services/adminService'
 import Swal from 'sweetalert2'
 import { FaCheck, FaTimes, FaEye, FaSpinner, FaHistory } from 'react-icons/fa'
 
@@ -15,7 +15,7 @@ const AdminClaims = () => {
     const fetchClaims = async () => {
         setLoading(true)
         try {
-            const res = await apiClient.get('/admin/claims')
+            const res = await adminService.getClaims()
             setClaims(res.data.claims || [])
         } catch (err) {
             console.error(err)
@@ -38,7 +38,7 @@ const AdminClaims = () => {
 
         if (result.isConfirmed) {
             try {
-                await apiClient.patch(`/admin/claims/${id}`, { status })
+                await adminService.resolveClaim(id, { status })
                 Swal.fire('Success', `Claim ${status} successfully`, 'success')
                 fetchClaims()
             } catch (err) {

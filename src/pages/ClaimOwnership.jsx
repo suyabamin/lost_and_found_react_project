@@ -13,6 +13,7 @@ import itemsService from '../services/itemsService'
 import { useAuth } from '../context/AuthContext'
 import Swal from 'sweetalert2'
 import ClaimQuestionsForm from '../components/ClaimQuestionsForm'
+import BackButton from '../components/BackButton'
 
 const ClaimOwnership = () => {
   const { id } = useParams()
@@ -119,7 +120,7 @@ const ClaimOwnership = () => {
         submitData.append('proof_image', proofImage)
       }
 
-      await itemsService.submitClaim(submitData)
+      await itemsService.identifyOwnership(submitData)
       
       Swal.fire({
         title: 'Claim Submitted!',
@@ -161,6 +162,9 @@ const ClaimOwnership = () => {
       <Header />
       
       <main className={styles.content}>
+        <div style={{ marginBottom: '24px' }}>
+          <BackButton />
+        </div>
         <header className={styles.topline}>
           <div className={styles.headerLeft}>
             <p className={styles.eyebrow}><FaHandshake /> Claim Process</p>
@@ -321,9 +325,6 @@ const ClaimOwnership = () => {
               <button type="submit" className={styles.btnPrimary} disabled={submitting}>
                 {submitting ? <FaSpinner className="spin" /> : <FaPaperPlane />} 
                 {submitting ? 'Submitting...' : 'Submit Claim Request'}
-              </button>
-              <button type="button" className={styles.btnSecondary} onClick={() => navigate(-1)}>
-                <FaTimes /> Cancel
               </button>
             </div>
           </form>

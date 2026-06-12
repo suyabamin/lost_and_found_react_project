@@ -1,3 +1,7 @@
+/* ==============================================================
+   SIDEBAR — Premium Navigation Panel
+   ============================================================== */
+
 :root {
   --sidebar-width: 280px;
 }
@@ -8,94 +12,98 @@
   left: 0;
   top: 0;
   height: 100vh;
-  background: var(--bg-white);
-  padding: 22px 18px;
-  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.06);
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  z-index: 50;
-  transition: background 0.3s ease, border-color 0.3s ease;
-}
-
-.logoArea {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  margin-bottom: 8px;
-  padding: 8px 4px;
-}
-
-.logoIcon {
-  font-size: 22px;
-}
-
-.logoText {
-  font-weight: 700;
-  font-size: 16px;
-  color: var(--text-primary);
-}
-
-.logoText span {
-  color: #14B8A6;
-}
-
-.navLinks {
-  list-style: none;
-  padding: 0;
-  margin: 12px 0;
+  background: var(--bg-card);
+  padding: 28px 16px;
+  border-right: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
   gap: 4px;
+  z-index: var(--z-sidebar);
+  transition: var(--transition);
+  overflow-y: auto;
+  /* Subtle shadow on right edge */
+  box-shadow: 2px 0 20px rgba(15, 23, 42, 0.04);
+}
+
+/* ── Logo ────────────────────────────────────────────── */
+.logoArea {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+  padding: 0 12px;
+}
+
+.logoIcon {
+  font-size: 26px;
+}
+
+.logoText {
+  font-weight: 900;
+  font-size: 1.3rem;
+  color: var(--text-heading);
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.logoText span {
+  color: var(--primary);
+}
+
+/* ── Nav Links ───────────────────────────────────────── */
+.navLinks {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
 }
 
 .navItem a {
   display: flex;
-  gap: 12px;
   align-items: center;
-  color: var(--text-primary);
+  gap: 14px;
+  color: var(--text-body);
   text-decoration: none;
-  padding: 11px 14px;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.2s ease;
+  padding: 13px 16px;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: var(--transition);
+  position: relative;
+}
+
+.navItem a svg {
+  font-size: 1.15rem;
+  flex-shrink: 0;
 }
 
 .navItem a:hover {
-  background: rgba(20, 184, 166, 0.08);
-  color: #14B8A6;
-  transform: translateX(3px);
+  background: var(--bg-card-alt);
+  color: var(--primary);
+  transform: translateX(4px);
 }
 
 .navItem a.active {
-  background: rgba(20, 184, 166, 0.12);
-  color: #14B8A6;
-  font-weight: 600;
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 4px 14px rgba(0, 169, 181, 0.22);
 }
 
+.navItem a.active:hover {
+  transform: none;
+}
+
+/* ── Sidebar Footer ──────────────────────────────────── */
 .sidebarFooter {
   margin-top: auto;
-  padding-top: 12px;
-  border-top: 1px solid var(--border);
-}
-
-.helpBtn {
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
   display: flex;
-  gap: 8px;
-  align-items: center;
-  cursor: pointer;
-  color: var(--text-secondary);
-  font-size: 14px;
-  padding: 10px 14px;
-  border-radius: 10px;
-  transition: all 0.2s ease;
-}
-
-.helpBtn:hover {
-  color: #14B8A6;
-  background: rgba(20, 184, 166, 0.08);
+  flex-direction: column;
+  gap: 10px;
 }
 
 .userProfileMini {
@@ -103,14 +111,17 @@
   align-items: center;
   gap: 12px;
   padding: 12px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   text-decoration: none;
-  margin-bottom: 8px;
-  transition: background 0.2s;
+  transition: var(--transition);
+  background: var(--bg-card-alt);
+  border: 1px solid var(--border-color);
 }
 
 .userProfileMini:hover {
-  background: var(--bg-soft);
+  border-color: var(--primary);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-sm);
 }
 
 .miniAvatar {
@@ -118,27 +129,59 @@
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--primary-color);
+  border: 2px solid var(--border-color);
+  flex-shrink: 0;
+  transition: var(--transition);
+}
+
+.userProfileMini:hover .miniAvatar {
+  border-color: var(--primary);
 }
 
 .miniInfo {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .miniName {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-heading);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .miniRole {
-  font-size: 11px;
-  color: var(--text-secondary);
+  font-size: 0.72rem;
+  color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.06em;
+  font-weight: 600;
 }
 
+.helpBtn {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 11px 14px;
+  border-radius: var(--radius-md);
+  transition: var(--transition);
+  border: 1px solid transparent;
+}
+
+.helpBtn:hover {
+  color: var(--primary);
+  background: var(--primary-light);
+  border-color: rgba(0,169,181,0.2);
+}
+
+/* ── Responsive ──────────────────────────────────────── */
 @media (max-width: 1024px) {
   .sidebar {
     display: none;

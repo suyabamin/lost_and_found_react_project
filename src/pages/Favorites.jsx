@@ -160,17 +160,23 @@ const Favorites = () => {
                                     <div className={styles.catTag}>{item.category}</div>
                                     <h3>{item.title}</h3>
                                     <div className={styles.locTag}><FaMapPin /> {item.location}</div>
-                                    <div className={styles.cardBottom}>
-                                        <button 
-                                            className={styles.btnAction}
-                                            onClick={() => navigate(`/post/${item.id}`)}
-                                        >
-                                            View Case <FaArrowRight />
-                                        </button>
-                                        <span className={styles.timestamp}>
-                                            {new Date(item.favorited_at || item.created_at).toLocaleDateString()}
-                                        </span>
-                                    </div>
+                                     <div className={styles.cardBottom}>
+                                         <button 
+                                             className={styles.btnAction}
+                                             onClick={() => navigate(`/post/${item.id}`)}
+                                         >
+                                             View Case
+                                         </button>
+                                         <button 
+                                             className={styles.btnRemove}
+                                             onClick={(e) => handleRemoveFavorite(e, item.id)}
+                                         >
+                                             Remove
+                                         </button>
+                                     </div>
+                                     <span className={styles.timestamp}>
+                                         {new Date(item.favorited_at || item.created_at).toLocaleDateString()}
+                                     </span>
                                 </div>
                             </div>
                         ))}

@@ -10,116 +10,126 @@ import {
   FaTrash, FaCheck, FaEnvelope, FaEnvelopeOpen,
   FaHandshake, FaSearch, FaTimesCircle, FaSpinner,
   FaBoxOpen, FaUser, FaPhone, FaFileAlt, FaImage,
-  FaTimes, FaThumbsUp, FaThumbsDown, FaComments
+  FaTimes, FaThumbsUp, FaThumbsDown, FaComments,
+  FaShieldAlt, FaMapMarkerAlt, FaGem, FaStar
 } from 'react-icons/fa'
 import styles from '../styles/pages/Notifications.module.css'
 
+import BackButton from '../components/BackButton'
+
 // ─── Claim Detail Modal ──────────────────────────────────────────────────────
 const ClaimModal = ({ claim, onClose, onApprove, onDeny, loading }) => {
-  if (!claim) return null
-
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.modalCard} onClick={e => e.stopPropagation()}>
         <button className={styles.modalClose} onClick={onClose}><FaTimes /></button>
 
-        <div className={styles.modalHeader}>
-          <FaHandshake className={styles.modalHeaderIcon} />
-          <h2>Claim Request</h2>
-          <span className={`${styles.statusBadge} ${styles[claim.status]}`}>
-            {claim.status}
-          </span>
-        </div>
-
-        {/* Item info */}
-        <div className={styles.modalItemRow}>
-          {claim.item_image && (
-            <img src={claim.item_image} alt={claim.item_title} className={styles.modalItemImg} />
-          )}
-          <div>
-            <p className={styles.modalItemLabel}>Item</p>
-            <h3 className={styles.modalItemTitle}>{claim.item_title}</h3>
-            {claim.item_location && (
-              <p className={styles.modalItemSub}>📍 {claim.item_location}</p>
-            )}
+        {loading || !claim ? (
+          <div className={styles.loadingCenter} style={{ padding: '60px' }}>
+            <FaSpinner className="spin" size={40} color="var(--primary)" />
+            <p style={{ marginTop: '16px', fontWeight: '700' }}>Loading claim details...</p>
           </div>
-        </div>
-
-        <hr className={styles.divider} />
-
-        {/* Claimant info */}
-        <div className={styles.modalSection}>
-          <h4><FaUser /> Claimant</h4>
-          <div className={styles.claimantRow}>
-            <img
-              src={claim.claimant_avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(claim.claimant_name)}&background=00cfe8&color=fff&bold=true`}
-              alt={claim.claimant_name}
-              className={styles.claimantAvatar}
-            />
-            <div>
-              <p className={styles.claimantName}>{claim.claimant_name}</p>
-              <p className={styles.claimantEmail}>{claim.claimant_email}</p>
-              {claim.contact_info && <p className={styles.claimantPhone}><FaPhone /> {claim.contact_info}</p>}
+        ) : (
+          <>
+            <div className={styles.modalHeader}>
+              <FaHandshake className={styles.modalHeaderIcon} />
+              <h2>Claim Request</h2>
+              <span className={`${styles.statusBadge} ${styles[claim.status]}`}>
+                {claim.status}
+              </span>
             </div>
-          </div>
-        </div>
 
-        {/* Reason */}
-        <div className={styles.modalSection}>
-          <h4><FaFileAlt /> Reason for Claim</h4>
-          <p className={styles.modalText}>{claim.reason || '—'}</p>
-        </div>
+            {/* Item info */}
+            <div className={styles.modalItemRow}>
+              {claim.item_image && (
+                <img src={claim.item_image} alt={claim.item_title} className={styles.modalItemImg} />
+              )}
+              <div>
+                <p className={styles.modalItemLabel}>Item</p>
+                <h3 className={styles.modalItemTitle}>{claim.item_title}</h3>
+                {claim.item_location && (
+                  <p className={styles.modalItemSub}>📍 {claim.item_location}</p>
+                )}
+              </div>
+            </div>
 
-        {/* Proof description */}
-        {claim.proof_description && (
-          <div className={styles.modalSection}>
-            <h4><FaFileAlt /> Proof Description</h4>
-            <p className={styles.modalText}>{claim.proof_description}</p>
-          </div>
-        )}
+            <hr className={styles.divider} />
 
-        {/* Verification Questions Answers */}
-        <ReviewClaimAnswers answers={claim.answers} />
+            {/* Claimant info */}
+            <div className={styles.modalSection}>
+              <h4><FaUser /> Claimant</h4>
+              <div className={styles.claimantRow}>
+                <img
+                  src={claim.claimant_avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(claim.claimant_name)}&background=00A9B5&color=fff&bold=true`}
+                  alt={claim.claimant_name}
+                  className={styles.claimantAvatar}
+                />
+                <div>
+                  <p className={styles.claimantName}>{claim.claimant_name}</p>
+                  <p className={styles.claimantEmail}>{claim.claimant_email}</p>
+                  {claim.contact_info && <p className={styles.claimantPhone}><FaPhone /> {claim.contact_info}</p>}
+                </div>
+              </div>
+            </div>
 
-        {/* Proof image */}
-        {claim.proof_image && (
-          <div className={styles.modalSection}>
-            <h4><FaImage /> Evidence Photo</h4>
-            <img src={claim.proof_image} alt="Evidence" className={styles.proofImage} />
-          </div>
-        )}
+            {/* Reason */}
+            <div className={styles.modalSection}>
+              <h4><FaFileAlt /> Reason for Claim</h4>
+              <p className={styles.modalText}>{claim.reason || '—'}</p>
+            </div>
 
-        {/* Actions — only show if claim is still pending */}
-        {claim.status === 'pending' && (
-          <div className={styles.modalActions}>
-            <button
-              className={styles.denyBtn}
-              onClick={() => onDeny(claim.id)}
-              disabled={loading}
-            >
-              {loading ? <FaSpinner className="spin" /> : <FaThumbsDown />}
-              Deny Claim
-            </button>
-            <button
-              className={styles.approveBtn}
-              onClick={() => onApprove(claim.id)}
-              disabled={loading}
-            >
-              {loading ? <FaSpinner className="spin" /> : <FaThumbsUp />}
-              Approve & Open Chat
-            </button>
-          </div>
-        )}
+            {/* Proof description */}
+            {claim.proof_description && (
+              <div className={styles.modalSection}>
+                <h4><FaFileAlt /> Proof Description</h4>
+                <p className={styles.modalText}>{claim.proof_description}</p>
+              </div>
+            )}
 
-        {claim.status === 'approved' && (
-          <div className={styles.modalApprovedNote}>
-            <FaCheckCircle /> Claim approved — chat has been opened with claimant.
-          </div>
-        )}
-        {claim.status === 'rejected' && (
-          <div className={styles.modalRejectedNote}>
-            <FaTimesCircle /> This claim was denied.
-          </div>
+            {/* Verification Questions Answers */}
+            <ReviewClaimAnswers answers={claim.answers} />
+
+            {/* Proof image */}
+            {claim.proof_image && (
+              <div className={styles.modalSection}>
+                <h4><FaImage /> Evidence Photo</h4>
+                <img src={claim.proof_image} alt="Evidence" className={styles.proofImage} />
+              </div>
+            )}
+
+            {/* Actions — only show if claim is still pending */}
+            {claim.status === 'pending' && (
+              <div className={styles.modalActions}>
+                <button
+                  className={styles.denyBtn}
+                  onClick={() => onDeny(claim.id)}
+                  disabled={loading}
+                >
+                  {loading ? <FaSpinner className="spin" /> : <FaThumbsDown />}
+                  Deny Claim
+                </button>
+                <button
+                  className={styles.approveBtn}
+                  onClick={() => onApprove(claim.id)}
+                  disabled={loading}
+                >
+                  {loading ? <FaSpinner className="spin" /> : <FaThumbsUp />}
+                  Approve & Open Chat
+                </button>
+              </div>
+            )}
+
+            {claim.status === 'approved' && (
+              <div className={styles.modalApprovedNote}>
+                <FaCheckCircle /> Claim approved — chat has been opened with claimant.
+              </div>
+            )}
+            {claim.status === 'rejected' && (
+              <div className={styles.modalRejectedNote}>
+                <FaTimesCircle /> This claim was denied.
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
@@ -151,6 +161,13 @@ const NotificationsPage = () => {
 
   useEffect(() => {
     fetchNotifications()
+
+    // Handle Deep Linking / Navigation simulation
+    const params = new URLSearchParams(window.location.search)
+    const openClaimId = params.get('openClaim')
+    if (openClaimId) {
+      handleNotificationClick({ type: 'claim', reference_id: openClaimId, is_read: true })
+    }
   }, [fetchNotifications])
 
   const unreadCount = notifications.filter(n => !n.is_read).length
@@ -216,10 +233,11 @@ const NotificationsPage = () => {
   const handleNotificationClick = async (notif) => {
     // Mark as read
     if (!notif.is_read) {
-      try {
-        await notificationsService.markAsRead(notif.id)
-        setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, is_read: 1 } : n))
-      } catch (err) { console.error('Error marking as read:', err) }
+      notificationsService.markAsRead(notif.id)
+        .then(() => {
+          setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, is_read: 1 } : n))
+        })
+        .catch(err => console.error('Error marking as read:', err))
     }
 
     const ref = parseRef(notif)
@@ -227,19 +245,24 @@ const NotificationsPage = () => {
 
     // 1. Claim Request (Received by Founder)
     if (notif.type === 'claim') {
-      const claimId = ref.claim_id || refId
-      if (claimId) {
+      const claimId = ref.claim_id || ref.id || refId
+      if (claimId && !isNaN(claimId)) {
         setClaimLoading(true)
-        setClaimModal({}) // Show loading state in modal
+        setClaimModal({ id: claimId }) // Use a dummy object with ID to show it's loading
         try {
           const res = await claimsService.getClaimById(claimId)
-          setClaimModal(res.data.claim)
+          if (res.data?.claim) {
+            setClaimModal(res.data.claim)
+          } else {
+            throw new Error('Claim data not found')
+          }
         } catch (err) {
+          console.error('[NOTIF] Claim fetch error:', err)
           setClaimModal(null)
           Swal.fire({
             icon: 'error',
-            title: 'Oops...',
-            text: err.response?.data?.message || 'Could not load claim details.',
+            title: 'Claim Not Found',
+            text: 'This claim may have been deleted or processed already.',
             confirmButtonColor: '#ef4444'
           })
         } finally {
@@ -269,9 +292,10 @@ const NotificationsPage = () => {
       return
     }
 
-    // 4. Default: try to go to item if we have it
-    if (ref.item_id) {
-      navigate(`/items/${ref.item_id}`)
+    // 4. Default / Fallback: Try to navigate to item if we have any reference
+    const targetItemId = ref.item_id || ref.post_id || (!isNaN(refId) ? refId : null)
+    if (targetItemId) {
+      navigate(`/post/${targetItemId}`)
     }
   }
 
@@ -338,10 +362,16 @@ const NotificationsPage = () => {
   const getIcon = (type) => {
     switch (type) {
       case 'match': return <FaHandshake style={{ color: '#14B8A6' }} />
-      case 'message': return <FaEnvelope style={{ color: '#0ea5e9' }} />
       case 'claim': return <FaHandshake style={{ color: '#f59e0b' }} />
+      case 'admin_claim': return <FaShieldAlt style={{ color: '#0ea5e9' }} />
+      case 'admin_alert': return <FaBell style={{ color: '#ef4444' }} />
       case 'claim_approved': return <FaCheckCircle style={{ color: '#22c55e' }} />
       case 'claim_rejected': return <FaTimesCircle style={{ color: '#ef4444' }} />
+      case 'message': return <FaEnvelope style={{ color: '#0ea5e9' }} />
+      case 'tracking': return <FaMapMarkerAlt style={{ color: '#10b981' }} />
+      case 'reward': return <FaGem style={{ color: '#f59e0b' }} />
+      case 'return': return <FaBoxOpen style={{ color: '#8b5cf6' }} />
+      case 'rating': return <FaStar style={{ color: '#facc15' }} />
       case 'system': return <FaInfoCircle style={{ color: '#8b5cf6' }} />
       default: return <FaBell style={{ color: '#64748b' }} />
     }
@@ -352,8 +382,14 @@ const NotificationsPage = () => {
       case 'match': return { label: 'Match', color: '#14B8A6', bg: 'rgba(20,184,166,0.12)' }
       case 'message': return { label: 'Message', color: '#0ea5e9', bg: 'rgba(14,165,233,0.12)' }
       case 'claim': return { label: 'Claim', color: '#f59e0b', bg: 'rgba(245,158,11,0.12)' }
+      case 'admin_claim': return { label: '🛡️ Admin Claim', color: '#0ea5e9', bg: 'rgba(14,165,233,0.12)' }
+      case 'admin_alert': return { label: '🚨 Admin Alert', color: '#ef4444', bg: 'rgba(239,68,68,0.12)' }
       case 'claim_approved': return { label: '✅ Approved', color: '#22c55e', bg: 'rgba(34,197,94,0.12)' }
       case 'claim_rejected': return { label: '❌ Rejected', color: '#ef4444', bg: 'rgba(239,68,68,0.12)' }
+      case 'tracking': return { label: '📍 Tracking', color: '#10b981', bg: 'rgba(16,185,129,0.12)' }
+      case 'reward': return { label: '💎 Reward', color: '#f59e0b', bg: 'rgba(245,158,11,0.12)' }
+      case 'return': return { label: '📦 Return', color: '#8b5cf6', bg: 'rgba(139,92,246,0.12)' }
+      case 'rating': return { label: '⭐ Rating', color: '#facc15', bg: 'rgba(250,204,21,0.12)' }
       case 'system': return { label: 'System', color: '#8b5cf6', bg: 'rgba(139,92,246,0.12)' }
       default: return { label: 'Info', color: '#64748b', bg: 'rgba(100,116,139,0.12)' }
     }
@@ -366,6 +402,8 @@ const NotificationsPage = () => {
     if (notif.type === 'claim_approved' && (ref.conversation_id || refId)) return true
     if (notif.type === 'message') return true
     if (['tracking', 'return', 'reward', 'rating'].includes(notif.type) && (ref.tracking_id || refId)) return true
+    // System/Info/Match usually point to a post or item
+    if (['system', 'info', 'match'].includes(notif.type) && (ref.item_id || ref.post_id || refId)) return true
     return false
   }
 
@@ -382,33 +420,36 @@ const NotificationsPage = () => {
     <div className={styles.notificationsPage}>
       <Header />
       <main className={styles.mainContent}>
-        {/* Page Header */}
-        <div className={styles.pageHeader}>
-          <div className={styles.headerLeft}>
-            <h1 className={styles.pageTitle}>
-              <FaBell className={styles.titleIcon} />
-              Notifications
-              {unreadCount > 0 && (
-                <span className={styles.unreadBadge}>{unreadCount} new</span>
-              )}
-            </h1>
-            <p className={styles.subtitle}>Stay updated with all your lost and found activities</p>
-          </div>
-          <div className={styles.headerActions}>
-            {unreadCount > 0 && (
-              <button className={styles.markAllBtn} onClick={markAllRead}>
-                <FaCheck /> Mark all read
-              </button>
-            )}
-            {notifications.length > 0 && (
-              <button className={styles.clearAllBtn} onClick={clearAll} disabled={actionLoading}>
-                {actionLoading ? <FaSpinner className="spin" /> : <FaTrash />} Clear all
-              </button>
-            )}
-          </div>
-        </div>
-
         <div className={styles.contentArea}>
+          <div style={{ marginBottom: '24px' }}>
+            <BackButton />
+          </div>
+          {/* Page Header */}
+          <div className={styles.pageHeader}>
+            <div className={styles.headerLeft}>
+              <h1 className={styles.pageTitle}>
+                <FaBell className={styles.titleIcon} />
+                Notifications
+                {unreadCount > 0 && (
+                  <span className={styles.unreadBadge}>{unreadCount} new</span>
+                )}
+              </h1>
+              <p className={styles.subtitle}>Stay updated with all your lost and found activities</p>
+            </div>
+            <div className={styles.headerActions}>
+              {unreadCount > 0 && (
+                <button className={styles.markAllReadBtn} onClick={markAllRead}>
+                  <FaCheck /> Mark all read
+                </button>
+              )}
+              {notifications.length > 0 && (
+                <button className={styles.clearAllBtn} onClick={clearAll} disabled={actionLoading}>
+                  {actionLoading ? <FaSpinner className="spin" /> : <FaTrash />} Clear all
+                </button>
+              )}
+            </div>
+          </div>
+
           {/* Filter Bar */}
           <div className={styles.filterBar}>
             <div className={styles.searchBox}>
@@ -436,12 +477,13 @@ const NotificationsPage = () => {
               ))}
             </div>
             <div className={styles.filterChips}>
-              {['all', 'match', 'message', 'claim', 'system'].map(t => (
+              {['all', 'match', 'message', 'claim', 'admin_claim', 'system'].map(t => (
                 <button key={t} className={`${styles.chip} ${typeFilter === t ? styles.chipActive : ''}`} onClick={() => setTypeFilter(t)}>
                   {t === 'all' && 'All Types'}
                   {t === 'match' && '🤝 Matches'}
                   {t === 'message' && '💬 Messages'}
                   {t === 'claim' && '✅ Claims'}
+                  {t === 'admin_claim' && '🛡️ Admin'}
                   {t === 'system' && 'ℹ️ System'}
                 </button>
               ))}
@@ -483,6 +525,14 @@ const NotificationsPage = () => {
                     key={notif.id}
                     className={`${styles.notifCard} ${!notif.is_read ? styles.unread : ''} ${clickable ? styles.clickable : ''}`}
                     onClick={() => clickable && handleNotificationClick(notif)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && clickable) {
+                        handleNotificationClick(notif)
+                      }
+                    }}
+                    tabIndex={clickable ? 0 : -1}
+                    role={clickable ? "button" : "article"}
+                    aria-label={`Notification: ${notif.title || 'Update'}`}
                   >
                     {!notif.is_read && <div className={styles.unreadDot} />}
                     <div className={styles.notifIconWrap}>{getIcon(notif.type)}</div>
@@ -498,18 +548,13 @@ const NotificationsPage = () => {
                         <span className={styles.notifTime}>
                           {new Date(notif.created_at).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
                         </span>
-                        {/* Quick action hints */}
-                        {notif.type === 'claim' && (ref.claim_id || refId) && (
-                          <span className={styles.clickHint}>🔍 Click to review claim</span>
+
+                        {/* Interactive Hints */}
+                        {notif.type === 'claim' && (ref.claim_id || ref.id || refId) && (
+                          <div className={styles.clickHint}>🔍 Review Claim Details</div>
                         )}
-                        {(notif.type === 'claim_approved' || notif.type === 'message') && (ref.conversation_id || refId) && (
-                          <span className={styles.clickHintGreen}>💬 Click to open chat</span>
-                        )}
-                        {['tracking', 'return', 'reward', 'rating'].includes(notif.type) && (ref.tracking_id || refId) && (
-                          <span className={styles.clickHint}>📍 Click to track/view return</span>
-                        )}
-                        {notif.type === 'message' && !ref.conversation_id && !refId && (
-                          <span className={styles.clickHint}>💬 Click to view messages</span>
+                        {(notif.type === 'claim_approved' || notif.type === 'message') && (ref.conversation_id || ref.id || refId) && (
+                          <div className={styles.clickHint} style={{ color: '#059669', background: '#ecfdf5' }}>💬 Open Conversation</div>
                         )}
                       </div>
                     </div>
