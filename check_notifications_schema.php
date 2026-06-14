@@ -1,12 +1,11 @@
 <?php
-require 'backend/src/bootstrap.php';
+define('CLI', true);
+// Suppress headers by defining constants or just ignoring them if possible
+// The bootstrap.php calls header(), which might warn in CLI but it's okay
+
+require_once __DIR__ . '/backend/src/bootstrap.php';
+
 $db = Database::connection();
-try {
-    $stmt = $db->query('DESCRIBE notifications');
-    echo "TABLE: notifications\n";
-    foreach ($stmt->fetchAll() as $row) {
-        echo "  {$row['Field']} ({$row['Type']})\n";
-    }
-} catch (Exception $e) {
-    echo "Error: " . $e->getMessage() . "\n";
-}
+$stmt = $db->query("DESCRIBE notifications");
+$schema = $stmt->fetchAll(PDO::FETCH_ASSOC);
+echo json_encode($schema, JSON_PRETTY_PRINT);

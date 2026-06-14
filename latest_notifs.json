@@ -1,0 +1,224 @@
+﻿
+Warning: Undefined array key "REQUEST_METHOD" in D:\lost_and_found_React\backend\src\bootstrap.php on line 51
+[
+    {
+        "id": 148,
+        "user_id": 7,
+        "title": "Test Title",
+        "message": "Test Message",
+        "type": "claim",
+        "reference_id": "{\"claim_id\":14}",
+        "is_read": 0,
+        "created_at": "2026-06-14 05:13:45",
+        "user_name": "ku"
+    },
+    {
+        "id": 147,
+        "user_id": 6,
+        "title": "New Claim Submitted",
+        "message": "A new claim has been submitted for item \"Lost Samsung Galaxy A54 Near University Gate\" by sa.",
+        "type": "",
+        "reference_id": "17",
+        "is_read": 0,
+        "created_at": "2026-06-14 04:57:24",
+        "user_name": "suyabamin"
+    },
+    {
+        "id": 146,
+        "user_id": 5,
+        "title": "New Claim Submitted",
+        "message": "A new claim has been submitted for item \"Lost Samsung Galaxy A54 Near University Gate\" by sa.",
+        "type": "",
+        "reference_id": "17",
+        "is_read": 0,
+        "created_at": "2026-06-14 04:57:24",
+        "user_name": "System Admin"
+    },
+    {
+        "id": 145,
+        "user_id": 1,
+        "title": "New Claim Submitted",
+        "message": "A new claim has been submitted for item \"Lost Samsung Galaxy A54 Near University Gate\" by sa.",
+        "type": "",
+        "reference_id": "17",
+        "is_read": 0,
+        "created_at": "2026-06-14 04:57:24",
+        "user_name": "Admin User"
+    },
+    {
+        "id": 144,
+        "user_id": 7,
+        "title": "New Claim Received",
+        "message": "sa submitted a claim for your post \"Lost Samsung Galaxy A54 Near University Gate\". Click to review.",
+        "type": "claim",
+        "reference_id": "{\"claim_id\":17}",
+        "is_read": 0,
+        "created_at": "2026-06-14 04:57:24",
+        "user_name": "ku"
+    },
+    {
+        "id": 143,
+        "user_id": 8,
+        "title": "Post Published",
+        "message": "Your post \"Lost Brown Leather Wallet\" is now live.",
+        "type": "system",
+        "reference_id": null,
+        "is_read": 1,
+        "created_at": "2026-06-14 04:56:15",
+        "user_name": "sa"
+    },
+    {
+        "id": 142,
+        "user_id": 7,
+        "title": "Post Published",
+        "message": "Your post \"Found Black Backpack in Library\" is now live.",
+        "type": "system",
+        "reference_id": null,
+        "is_read": 0,
+        "created_at": "2026-06-14 04:49:18",
+        "user_name": "ku"
+    },
+    {
+        "id": 141,
+        "user_id": 7,
+        "title": "Post Published",
+        "message": "Your post \"Lost Samsung Galaxy A54 Near University Gate\" is now live.",
+        "type": "system",
+        "reference_id": null,
+        "is_read": 0,
+        "created_at": "2026-06-14 04:46:26",
+        "user_name": "ku"
+    },
+    {
+        "id": 140,
+        "user_id": 6,
+        "title": "New User Registration",
+        "message": "A new user su (su@gmail.com) has registered on the platform.",
+        "type": "admin_alert",
+        "reference_id": null,
+        "is_read": 0,
+        "created_at": "2026-06-14 04:37:46",
+        "user_name": "suyabamin"
+    },
+    {
+        "id": 139,
+        "user_id": 5,
+        "title": "New User Registration",
+        "message": "A new user su (su@gmail.com) has registered on the platform.",
+        "type": "admin_alert",
+        "reference_id": null,
+        "is_read": 0,
+        "created_at": "2026-06-14 04:37:46",
+        "user_name": "System Admin"
+    },
+    {
+        "id": 138,
+        "user_id": 1,
+        "title": "New User Registration",
+        "message": "A new user su (su@gmail.com) has registered on the platform.",
+        "type": "admin_alert",
+        "reference_id": null,
+        "is_read": 0,
+        "created_at": "2026-06-14 04:37:46",
+        "user_name": "Admin User"
+    },
+    {
+        "id": 137,
+        "user_id": 6,
+        "title": "New User Registration",
+        "message": "A new user jonny (jonny@gmail.com) has registered on the platform.",
+        "type": "admin_alert",
+        "reference_id": null,
+        "is_read": 0,
+        "created_at": "2026-06-12 15:56:03",
+        "user_name": "suyabamin"
+    },
+    {
+        "id": 136,
+        "user_id": 5,
+        "title": "New User Registration",
+        "message": "A new user jonny (jonny@gmail.com) has registered on the platform.",
+        "type": "admin_alert",
+        "reference_id": null,
+        "is_read": 0,
+        "created_at": "2026-06-12 15:56:03",
+        "user_name": "System Admin"
+    },
+    {
+        "id": 135,
+        "user_id": 1,
+        "title": "New User Registration",
+        "message": "A new user jonny (jonny@gmail.com) has registered on the platform.",
+        "type": "admin_alert",
+        "reference_id": null,
+        "is_read": 0,
+        "created_at": "2026-06-12 15:56:03",
+        "user_name": "Admin User"
+    },
+    {
+        "id": 134,
+        "user_id": 6,
+        "title": "New User Registration",
+        "message": "A new user kurshed (kurshed@gmail.com) has registered on the platform.",
+        "type": "admin_alert",
+        "reference_id": null,
+        "is_read": 0,
+        "created_at": "2026-06-12 15:54:37",
+        "user_name": "suyabamin"
+    },
+    {
+        "id": 133,
+        "user_id": 5,
+        "title": "New User Registration",
+        "message": "A new user kurshed (kurshed@gmail.com) has registered on the platform.",
+        "type": "admin_alert",
+        "reference_id": null,
+        "is_read": 0,
+        "created_at": "2026-06-12 15:54:37",
+        "user_name": "System Admin"
+    },
+    {
+        "id": 132,
+        "user_id": 1,
+        "title": "New User Registration",
+        "message": "A new user kurshed (kurshed@gmail.com) has registered on the platform.",
+        "type": "admin_alert",
+        "reference_id": null,
+        "is_read": 0,
+        "created_at": "2026-06-12 15:54:37",
+        "user_name": "Admin User"
+    },
+    {
+        "id": 131,
+        "user_id": 8,
+        "title": "New Message",
+        "message": "suyabamin: dfdf",
+        "type": "message",
+        "reference_id": null,
+        "is_read": 1,
+        "created_at": "2026-06-12 03:06:51",
+        "user_name": "sa"
+    },
+    {
+        "id": 130,
+        "user_id": 8,
+        "title": "Live Tracking Started",
+        "message": "Tracking session for \"dfd\" is active. Meet the founder to get your item.",
+        "type": "tracking",
+        "reference_id": "11",
+        "is_read": 0,
+        "created_at": "2026-06-12 03:06:43",
+        "user_name": "sa"
+    },
+    {
+        "id": 129,
+        "user_id": 8,
+        "title": "\ud83c\udf89 Claim Approved!",
+        "message": "Your claim for \"dfd\" has been approved! You can now chat with the founder and track live location.",
+        "type": "claim_approved",
+        "reference_id": "{\"claim_id\":16,\"conversation_id\":13}",
+        "is_read": 1,
+        "created_at": "2026-06-12 03:06:43",
+        "user_name": "sa"
+    }
+]

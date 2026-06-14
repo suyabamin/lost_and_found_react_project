@@ -73,7 +73,8 @@ class ClaimController
         }
         
         // Notify item owner — store claim_id in the notification's reference_id column
-        $notifMsg = "{$user['name']} submitted a claim for your post \"{$item['title']}\". Click to review.";
+        // Requirement: {claimerName} submitted a claim for your item "{itemTitle}".
+        $notifMsg = "{$user['name']} submitted a claim for your item \"{$item['title']}\". Click to review claim.";
         self::createClaimNotification(
             (int) $item['user_id'],
             'New Claim Received',
@@ -85,7 +86,7 @@ class ClaimController
         NotificationController::notifyAdmins(
             "New Claim Submitted", 
             "A new claim has been submitted for item \"{$item['title']}\" by {$user['name']}.",
-            'admin_claim',
+            'claim', // Using 'claim' type so it's valid in DB enum and clickable in UI
             $claimId
         );
         
@@ -347,13 +348,18 @@ class ClaimController
                 'claim_id'        => $claimId,
                 'conversation_id' => $convId,
             ]));
-            Database::connection()->prepare(
+            
+            $db = Database::connection();
+            $stmt = $db->prepare(
                 'INSERT INTO notifications (user_id, title, message, type, reference_id, is_read)
                  VALUES (?, ?, ?, ?, ?, 0)'
-            )->execute([$userId, $title, $message, $type, $refData]);
+            );
+            $stmt->execute([$userId, $title, $message, $type, $refData]);
         } catch (\Exception $e) {
-            // Fallback: try without reference_id column
-            NotificationController::createNotification($userId, $title, $message, $type);
+            // Fallback to standard controller method if local helper fails
+            error_log("[CLAIM_NOTIF] Fail: " . $e->getMessage());
+            $refData = isset($refData) ? $refData : null;
+            NotificationController::createNotification($userId, $title, $message, $type, $refData);
         }
     }
 }

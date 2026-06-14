@@ -8,7 +8,8 @@ class AuthController
         error_log("[AUTH] Register request started");
         $data = Request::input();
         $name = trim($data['name'] ?? '');
-        $email = filter_var($data['email'] ?? '', FILTER_VALIDATE_EMAIL);
+        $email = trim(strtolower($data['email'] ?? ''));
+        $email = filter_var($email, FILTER_VALIDATE_EMAIL);
         $password = $data['password'] ?? '';
 
         if (!$name || !$email || strlen($password) < 8) {
@@ -45,8 +46,10 @@ class AuthController
     public function login(): void
     {
         $data = Request::input();
-        $email = $data['email'] ?? '';
-        error_log("[AUTH] Attemping login for: $email");
+        $email = trim(strtolower($data['email'] ?? ''));
+        $password = $data['password'] ?? '';
+        
+        error_log("[AUTH] Attemping login for: $email (pwd length: " . strlen($password) . ")");
         $db = Database::connection();
         $stmt = $db->prepare('SELECT id, name, email, phone, role, status, password, avatar, bio, location, bkash_number, nagad_number, rocket_number FROM users WHERE email = ? LIMIT 1');
         $stmt->execute([$email]);
@@ -57,7 +60,7 @@ class AuthController
             Response::error('Invalid email or password.', 401);
         }
 
-        if (!password_verify($data['password'] ?? '', $user['password'])) {
+        if (!password_verify($password, $user['password'])) {
             error_log("[LOGIN] Password mismatch for: $email");
             Response::error('Invalid email or password.', 401);
         }

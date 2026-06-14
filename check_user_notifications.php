@@ -1,13 +1,18 @@
 <?php
-require 'backend/src/bootstrap.php';
+define('CLI', true);
+require_once __DIR__ . '/backend/src/bootstrap.php';
+
 $db = Database::connection();
-$userId = 6;
-try {
-    $stmt = $db->prepare('SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 5');
+// Fetch latest notifications for a specific user to see if claims are there
+// Let's find a user who has items
+$item = $db->query("SELECT user_id FROM items LIMIT 1")->fetch();
+if ($item) {
+    $userId = $item['user_id'];
+    $stmt = $db->prepare("SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 10");
     $stmt->execute([$userId]);
-    $notifications = $stmt->fetchAll();
-    echo "NOTIFICATIONS FOR USER $userId:\n";
-    print_r($notifications);
-} catch (Exception $e) {
-    echo "Error: " . $e->getMessage() . "\n";
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    echo "Notifications for User $userId:\n";
+    echo json_encode($rows, JSON_PRETTY_PRINT);
+} else {
+    echo "No items found.";
 }
